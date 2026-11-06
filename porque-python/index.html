@@ -664,8 +664,7 @@ const CMP={
 function cmp(l){$$('#cmpSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===l));$('#cmpCode').innerHTML=CMP[l];
   $('#mJava').style.width='100%';$('#mPy').style.width=l==='py'?'40%':'0'}
 $$('#cmpSeg button').forEach(b=>b.onclick=()=>cmp(b.dataset.l));
-let cId=0;
-enter.comparativa=async()=>{const id=++cId;$('#mJava').style.width='0';$('#mPy').style.width='0';cmp('java');$('#mPy').style.width='0';await wait(2200);if(id!==cId)return;cmp('py')};
+enter.comparativa=()=>cmp('java');
 cmp('java');
 
 /* Rankings */
@@ -682,7 +681,7 @@ origen:["≈ 2 min","Python empezó como un proyecto para entretenerse en vacaci
 zen:["≈ 2 min","Python está pensado para que el código lo lean personas.",["Pulsa «Ejecutar import this» o hazlo en el Colab real: suele generar curiosidad.","Traduce dos o tres principios: bonito mejor que feo, simple mejor que complejo, la legibilidad cuenta.","Enlace con el taller: os pediremos poder explicar cada línea que entreguéis."],"Un momento clave de su historia: el cambio de versión."],
 versiones:["≈ 2 min","Python 3 rompió la compatibilidad a propósito para corregir errores de diseño.",["En 2008 aparece la comparativa: print pasa a ser función y 3/2 da 1.5.","La migración tardó 12 años: cambiar una tecnología muy adoptada es caro y lento.","Aviso práctico: código de internet con print sin paréntesis es Python 2."],"¿Por qué le gusta tanto a la gente?"],
 ventajas:["≈ 2 min","No leas las ocho: elige tres.",["Se lee fácil, ecosistema enorme e interactivo son las más relevantes para este grupo.","«Pegamento»: conecta piezas que ya existen en la empresa.","Cierra con la caja roja: saber cuándo no usar Python también es criterio."],"Veámoslo con un ejemplo."],
-comparativa:["≈ 2 min","El mismo filtro en Java y en Python.",["Deja que aparezca Java y luego cambia a Python.","Pide a la sala que lea en voz alta el de Python, sin saber programar.","Java no es peor: está pensado para grandes aplicaciones empresariales.","Primer contacto con el Titanic: este filtro lo haremos con pasajeros reales."],"Vale, se lee fácil. ¿Pero se usa?"],
+comparativa:["≈ 2 min","El mismo filtro en Java y en Python.",["Empieza en Java y pulsa «Python» cuando quieras hacer el contraste.","Pide a la sala que lea en voz alta el de Python, sin saber programar.","Java no es peor: está pensado para grandes aplicaciones empresariales.","Primer contacto con el Titanic: este filtro lo haremos con pasajeros reales."],"Vale, se lee fácil. ¿Pero se usa?"],
 stackoverflow:["≈ 2 min","Los cuatro primeros están prácticamente empatados, y Python está entre ellos.",["Stack Overflow es la web de preguntas y respuestas de los programadores; su encuesta es la más citada.","SQL es 2.º: en este máster Python y SQL van de la mano.","Matiz: encuesta voluntaria, sesga hacia esa comunidad."],"Otras fuentes miden cosas distintas."],
 tiobe:["≈ 2 min","TIOBE cuenta búsquedas; GitHub cuenta código real.",["TIOBE: Python 1.º, aunque baja 5 puntos en el año y en octubre cambió el método (búsquedas en chino).","GitHub: 2.º tras TypeScript, muy usado en desarrollo web.","Guiño: R, el lenguaje de la sesión 4, está en el 8.º puesto."],"¿Y qué piden las empresas?"],
 empleo:["≈ 2 min","Python está entre las tecnologías más pedidas, aquí y en EE. UU.",["España: Java lidera por banca, seguros y administración; Python lleva todo 2026 en 2.ª posición.","EE. UU.: Python y SQL casi empatados; juntos en 1 de cada 5 ofertas.","Uso y demanda no son lo mismo: JavaScript es 1.º en uso pero 4.º en ofertas."],"Vamos a lo que más os interesa: los datos."],
