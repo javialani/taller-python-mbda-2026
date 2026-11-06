@@ -10,6 +10,8 @@
   --accent:#0E7C76; --accent-fill:#2BB3A8; --accent-soft:#DDF1EE;
   --code-bg:#14213D; --code-fg:#E6F2F0; --code-hi:#5FD0C5; --code-dim:#8FA9B8;
   --warn:#B4401C; --warn-soft:#FBE7DF; --off:#B9C4C9;
+  --glass-top:#FFFFFF; --glass-bot:#E4F2F0; --glass-edge:#9FBDB9; --lid:#14213D;
+  --paper:#FBF6E8; --paper-ink:#14213D; --tray:#1B2B4D; --tray-cell:#101B33; --tray-idx:#8FA9B8;
   --f-display:'Rubik', 'Trebuchet MS', Arial, sans-serif;
   --f-body:'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
   --f-code:'JetBrains Mono', 'Courier New', monospace;
@@ -18,14 +20,20 @@
   --bg:#0D1628; --surface:#14213A; --ink:#EEF3F2; --muted:#A8B8C3; --line:#26375A;
   --accent:#5FD0C5; --accent-fill:#2BB3A8; --accent-soft:#163B44;
   --code-bg:#08101F; --code-fg:#E6F2F0; --code-hi:#5FD0C5; --code-dim:#7D93A3;
-  --warn:#F59A73; --warn-soft:#3A2420; --off:#4A5A70; color-scheme:dark}}
+  --warn:#F59A73; --warn-soft:#3A2420; --off:#4A5A70;
+  --glass-top:#1F3150; --glass-bot:#162640; --glass-edge:#4F6A8A; --lid:#8FA9B8;
+  --tray:#1E3159; --tray-cell:#0B1426; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0D1628; --surface:#14213A; --ink:#EEF3F2; --muted:#A8B8C3; --line:#26375A;
   --accent:#5FD0C5; --accent-fill:#2BB3A8; --accent-soft:#163B44;
   --code-bg:#08101F; --code-fg:#E6F2F0; --code-hi:#5FD0C5; --code-dim:#7D93A3;
-  --warn:#F59A73; --warn-soft:#3A2420; --off:#4A5A70; color-scheme:dark}
+  --warn:#F59A73; --warn-soft:#3A2420; --off:#4A5A70;
+  --glass-top:#1F3150; --glass-bot:#162640; --glass-edge:#4F6A8A; --lid:#8FA9B8;
+  --tray:#1E3159; --tray-cell:#0B1426; color-scheme:dark}
 
 html,body{height:100%}
+/* Sin ligaduras de código: == y != se ven como dos caracteres, no como un signo largo */
+*,*::before,*::after{font-variant-ligatures:no-contextual;font-feature-settings:"calt" 0}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--accent-fill);outline-offset:2px}
@@ -111,16 +119,126 @@ h2{font-size:clamp(28px,4.2vw,50px)}
 .jar span{font-size:13px;color:var(--muted);text-align:center}
 .jar[aria-pressed="true"]{border-color:var(--accent-fill);transform:translateY(-6px)}
 
-/* 4 Taquillas */
-.lockers{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:8px}
-@media (max-width:700px){.lockers{grid-template-columns:repeat(6,minmax(0,1fr))}}
-.locker{position:relative;aspect-ratio:3/4;max-width:100%;border:0;padding:0;background:var(--accent-soft);border-radius:8px;perspective:600px}
-.locker .val{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-code);font-weight:600;font-size:clamp(14px,2vw,20px);color:var(--ink)}
-.locker .door{position:absolute;inset:0;border-radius:8px;background:var(--ink);transform-origin:left center;transition:transform .5s cubic-bezier(.3,.7,.3,1);display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:8px 0}
-.locker .door::before{content:"";width:50%;height:3px;background:var(--off);border-radius:2px;box-shadow:0 6px 0 var(--off),0 12px 0 var(--off)}
-.locker .door em{font-style:normal;font-family:var(--f-code);font-size:13px;color:var(--bg)}
-.locker.open .door{transform:rotateY(-105deg)}
-.locker.open .val{color:var(--accent)}
+/* 4 Lista: de muchos tarros a una caja con compartimentos */
+.pack{display:flex;flex-direction:column;gap:22px}
+.loose,.slots{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.loose,.slots{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* Tarro de cristal: tapa con estrías, cuello, cuerpo con brillo, etiqueta de papel y el valor dentro */
+.mjar{display:flex;flex-direction:column;align-items:center;min-width:0}
+.mjar .lid{width:64%;height:11px;border-radius:4px 4px 2px 2px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 2px,transparent 2px 5px),var(--lid);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.mjar .neck{width:54%;height:6px;background:var(--glass-bot);border-left:2px solid var(--glass-edge);border-right:2px solid var(--glass-edge)}
+.mjar .glass{position:relative;width:100%;max-width:84px;aspect-ratio:4/5;border:2px solid var(--glass-edge);border-radius:14px 14px 18px 18px;background:linear-gradient(180deg,var(--glass-top),var(--glass-bot));display:flex;align-items:flex-end;justify-content:center;padding-bottom:10%;overflow:hidden;box-shadow:inset 0 -8px 14px -10px rgba(14,124,118,.35)}
+.mjar .glass::after{content:"";position:absolute;top:10%;bottom:24%;left:10%;width:11%;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));opacity:.55;pointer-events:none}
+.mjar .tag{position:absolute;top:16%;left:50%;transform:translateX(-50%) rotate(-4deg);max-width:88%;background:var(--paper);color:var(--paper-ink);font-family:var(--f-code);font-size:12px;font-weight:600;padding:2px 6px;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.18);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Ficha con el valor (pasa del tarro a la caja) */
+.vchip{display:grid;place-items:center;min-width:2.3em;height:2.3em;padding:0 .3em;border-radius:999px;background:radial-gradient(circle at 35% 30%,#7FE0D6,var(--accent-fill) 60%);color:#0B1A2E;font-family:var(--f-code);font-weight:700;font-size:clamp(13px,1.5vw,17px);font-variant-numeric:tabular-nums;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.2)}
+/* Caja organizadora: bandeja navy con huecos hundidos y etiqueta de papel colgada */
+[hidden]{display:none!important}
+.box{position:relative;border-radius:18px;padding:38px 14px 14px;background:linear-gradient(180deg,#25396A,var(--tray));box-shadow:0 18px 34px -20px rgba(20,33,61,.7),inset 0 2px 0 rgba(255,255,255,.12),inset 0 -3px 0 rgba(0,0,0,.25)}
+.box-label{position:absolute;top:-16px;left:22px;display:flex;align-items:center;gap:8px;background:var(--paper);color:var(--paper-ink);font-family:var(--f-code);font-weight:700;font-size:16px;padding:5px 16px 5px 12px;border-radius:4px 10px 10px 4px;box-shadow:0 3px 8px rgba(0,0,0,.25);transform:rotate(-2deg)}
+.box-label::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--tray);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.slot{border:0;border-radius:12px;background:var(--tray-cell);min-height:78px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px 0;min-width:0;box-shadow:inset 0 4px 8px rgba(0,0,0,.55),inset 0 -1px 0 rgba(255,255,255,.06);transition:box-shadow .25s,transform .25s}
+.slot .v{min-height:2.3em;display:flex;align-items:center}
+.slot .i{font-family:var(--f-code);font-size:13px;font-weight:600;color:var(--tray-idx)}
+.slot:disabled{cursor:default}
+.slot:not(:disabled):hover{transform:translateY(-2px)}
+.slot.sel{transform:translateY(-4px);box-shadow:inset 0 4px 8px rgba(0,0,0,.55),0 0 0 3px var(--accent-fill)}
+.slot.sel .i{color:#7FE0D6}
+.slot.sel .vchip{transform:scale(1.12)}
+.mjar .lid{transition:transform .3s ease}
+.mjar.opening .lid{transform:translateY(-12px) rotate(-18deg)}
+.mjar .glass,.mjar .neck{transition:opacity .5s}
+.mjar.empty .glass,.mjar.empty .neck{opacity:.45}
+.loose{transition:opacity .5s,transform .5s}
+.loose.fade{opacity:0;transform:translateY(-12px)}
+.vchip{position:relative;z-index:2}
+.slot.land{animation:land .6s ease-out}
+@keyframes land{from{box-shadow:inset 0 4px 8px rgba(0,0,0,.55),0 0 0 0 rgba(43,179,168,.9)}to{box-shadow:inset 0 4px 8px rgba(0,0,0,.55),0 0 0 16px rgba(43,179,168,0)}}
+/* Operadores aritméticos */
+#arseg button{font-size:16px;padding:8px 16px}
+#cmpOp button{font-size:22px;font-weight:700;padding:10px 22px;min-width:64px}
+#arseg button b{font-family:var(--f-code);margin-right:6px}
+.calcwrap{display:flex;flex-direction:column;gap:18px;justify-content:center;min-width:0}
+.calc{display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-height:110px}
+.calc .tok{font-family:var(--f-code);font-weight:600;font-size:clamp(22px,3.2vw,40px);padding:8px 16px;border-radius:14px;background:var(--surface);border:2px solid var(--line);color:var(--ink);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.calc .tok small{font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted);margin-top:4px}
+.calc .opx{font-family:var(--f-code);font-weight:700;font-size:clamp(26px,3.6vw,46px);color:var(--accent)}
+.calc .eq{font-family:var(--f-code);font-size:clamp(24px,3.2vw,40px);color:var(--muted)}
+.calc .res{background:var(--accent-fill);border-color:var(--accent-fill);color:#0B1A2E}
+.calc .res small{color:#0B1A2E}
+.calc.play>*{animation:fadeUp .45s cubic-bezier(.3,.7,.3,1) both}
+.calc.play>*:nth-child(2){animation-delay:.25s}.calc.play>*:nth-child(3){animation-delay:.5s}.calc.play>*:nth-child(4){animation-delay:.9s}
+.calc.play>*:nth-child(5){animation:popIn .5s cubic-bezier(.2,1.6,.4,1) 1.15s both}
+@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.arops{display:flex;flex-direction:column;gap:10px}
+.arops table.t td{padding:4px 10px}
+.arops code,.arops .hint code{font-family:var(--f-code);font-weight:700;color:var(--accent)}
+.arops p{margin:0}
+
+/* Operadores de comparación: eje de edades con umbral */
+.cmpslide{min-width:min(320px,100%);flex:1}
+.cmpslide input{width:100%;accent-color:var(--accent-fill)}
+.axiswrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 26px 12px}
+.axis{position:relative;height:150px;border-bottom:2px solid var(--muted);margin-bottom:28px}
+.axis .tick{position:absolute;bottom:-26px;transform:translateX(-50%);font-family:var(--f-code);font-size:12px;color:var(--muted)}
+.axis .tick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+.axis .dot{position:absolute;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-code);font-size:13px;font-weight:700;background:var(--line);color:var(--muted);transition:background .35s,color .35s,transform .35s,box-shadow .35s}
+.axis .dot.yes{background:var(--accent-fill);color:#0B1A2E;transform:translateX(-50%) translateY(-6px);box-shadow:0 6px 12px -6px rgba(14,124,118,.6)}
+.axis .thr{position:absolute;top:-6px;bottom:0;width:0;border-left:2px dashed var(--warn);transition:left .2s}
+.axis .thr b{position:absolute;top:-4px;left:6px;font-family:var(--f-code);font-size:13px;color:var(--warn);white-space:nowrap}
+
+/* Vectorización */
+.vrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.vlabel{font-family:var(--f-code);font-weight:700;font-size:15px;background:var(--ink);color:var(--bg);padding:4px 12px;border-radius:6px}
+.vcells{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;flex:1;min-width:0}
+@media (max-width:760px){.vcells{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.vc{font-family:var(--f-code);font-weight:600;font-size:clamp(13px,1.4vw,17px);text-align:center;padding:12px 2px;border-radius:8px;background:var(--surface);border:1.5px solid var(--line);font-variant-numeric:tabular-nums;transition:background .3s,border-color .3s,transform .3s}
+.vc.cur{border-color:var(--warn);transform:translateY(-4px)}
+.vc.new{background:var(--accent-soft);border-color:var(--accent-fill)}
+.vc.flash{animation:vflash .7s ease}
+@keyframes vflash{0%{background:var(--accent-fill);transform:scale(1.08)}100%{background:var(--accent-soft);transform:none}}
+.dtype{font-family:var(--f-code);font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;padding:4px 12px}
+
+/* Estadísticos */
+.staxis{height:120px}
+.staxis .dot{width:26px;height:26px;font-size:0}
+.band{position:absolute;top:0;bottom:0;background:var(--accent-soft);border-left:1px dashed var(--accent-fill);border-right:1px dashed var(--accent-fill);opacity:0;transition:left .5s cubic-bezier(.3,.7,.3,1),width .5s cubic-bezier(.3,.7,.3,1),opacity .3s}
+.band.on{opacity:1}
+.smark{position:absolute;top:-6px;bottom:0;width:0;border-left:3px solid var(--warn);transition:left .6s cubic-bezier(.3,.7,.3,1),opacity .3s;opacity:0}
+.smark.on{opacity:1}
+.smark b{position:absolute;top:-6px;left:8px;font-family:var(--f-code);font-size:14px;color:var(--warn);white-space:nowrap;background:var(--surface);padding:0 4px;border-radius:4px}
+.nanrow{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.nanrow p{margin:4px 0 0}
+.nanv{color:var(--warn);font-family:var(--f-code)}
+.nanout{font-family:var(--f-code);font-weight:700;font-size:28px;min-width:4ch}
+.nanout.bad{color:var(--warn)} .nanout.good{color:var(--accent)}
+
+/* Operadores lógicos */
+.lbuild{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end}
+.lgroup{display:flex;flex-direction:column;gap:6px}
+.lpax{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-content:start}
+@media (max-width:640px){.lpax{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lp{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);transition:background .35s,border-color .35s,opacity .35s,transform .35s;min-width:0}
+.lp b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp .ab{display:flex;gap:6px}
+.lp i{font-style:normal;font-family:var(--f-code);font-size:12px;font-weight:600;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.lp i.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.lp.match{background:var(--accent-soft);border-color:var(--accent-fill);transform:translateY(-3px)}
+.lp:not(.match){opacity:.55}
+.lops{display:flex;flex-direction:column;gap:6px;font-size:15px}
+.lops p{margin:0}
+.lops code{font-family:var(--f-code);font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 6px;border-radius:5px}
+
+/* print() */
+.console{font-family:var(--f-code);font-size:15px;line-height:1.7;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent-fill);border-radius:10px;padding:14px 18px;min-height:96px;overflow-x:auto;white-space:pre}
+.console .o{display:block;color:var(--accent);animation:fadeUp .35s ease both}
+.console .o.empty{color:var(--muted);font-style:italic;font-family:var(--f-body)}
+.console .o small{font-family:var(--f-body);color:var(--muted);font-size:13px;margin-left:10px}
+.prnote{display:flex;flex-direction:column;gap:16px;justify-content:center}
+.prbig{font-family:var(--f-code);font-weight:600;font-size:clamp(22px,2.6vw,32px);color:var(--ink)}
+.prbig span{font-family:var(--f-body);font-weight:500;font-size:.62em;background:var(--accent-soft);color:var(--accent);padding:4px 10px;border-radius:8px;vertical-align:middle}
+.prnote p{font-size:17px;max-width:46ch}
+.tcaret{display:inline-block;width:.55em;height:1em;vertical-align:-2px;background:var(--code-hi);margin-left:2px;animation:blink 1s steps(1) infinite}
 
 /* 5 Fichas → tabla */
 .deck{display:flex;flex-wrap:wrap;gap:14px}
@@ -143,6 +261,15 @@ table.t th,table.t td{padding:6px 12px;text-align:left;border-bottom:1px solid v
 table.t th{font-family:var(--f-code);font-weight:600;color:var(--accent);font-size:13px}
 table.t tr{transition:background .2s}
 table.t tr.cur{background:var(--accent-soft)}
+/* Conector fila → bloque for:  -----{ */
+.loopsplit{position:relative;column-gap:84px}
+.looplink{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3;opacity:0;transition:opacity .3s}
+.looplink.on{opacity:1}
+.lk-line{fill:none;stroke:var(--accent-fill);stroke-width:3;stroke-linecap:round;stroke-dasharray:6 6;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.lk-brace{fill:none;stroke:var(--accent-fill);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.lk-dot{fill:var(--accent-fill)}
+.lk-line,.lk-dot{transition:d .35s ease,cy .35s ease}
 table.t tr.hit td:last-child::after{content:" +1";color:var(--accent);font-weight:600}
 table.t td.na{color:var(--warn);font-family:var(--f-code)}
 .counter{font-family:var(--f-display);font-weight:600;font-size:clamp(40px,6vw,72px);line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -190,6 +317,8 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
 
 /* 13 Autoevaluación */
 .qa{display:flex;flex-direction:column;gap:10px}
+.sumtbl table.t td{padding:4px 12px;white-space:normal}
+.sumtbl code{font-family:var(--f-code);font-weight:600;color:var(--accent)}
 .qa details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
 .qa summary{cursor:pointer;font-weight:600}
 .qa details p{margin-top:8px;color:var(--accent)}
@@ -369,10 +498,7 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
   <div class="inner">
     <div><div class="eyebrow">El entorno</div><h2>Un notebook es un cuaderno de laboratorio</h2></div>
     <div class="body">
-      <div class="split">
-        <div class="nb" id="nb"></div>
-        <div class="panel"><p><b>Texto</b>: lo que pienso y lo que concluyo.</p><p><b>Código</b>: el experimento. Se ejecuta con <b>Shift + Enter</b>.</p><p><b>Resultado</b>: aparece justo debajo.</p><p class="hint" style="margin-top:10px">Google Colab es ese cuaderno funcionando en un ordenador de Google: solo hace falta el navegador.</p></div>
-      </div>
+      <div class="nb" id="nb" style="max-width:760px"></div>
       <div class="row"><button class="btn" id="nbRun">Ejecutar celdas</button></div>
     </div>
   </div>
@@ -396,6 +522,29 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
   </div>
 </section>
 
+<!-- print -->
+<section class="scene" data-id="print" aria-label="print()">
+  <div class="inner">
+    <div><div class="eyebrow">El entorno</div><h2>print() muestra en pantalla lo que le pidas</h2></div>
+    <div class="body">
+      <div class="row"><span class="hint">Ejemplo:</span><div class="seg" id="prseg"></div></div>
+      <div class="split" style="align-items:stretch">
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+          <span class="hint">Celda de código</span>
+          <div class="code" id="prcode"></div>
+          <span class="hint">Salida</span>
+          <div class="console" id="prout" aria-live="polite"></div>
+        </div>
+        <div class="panel prnote">
+          <div class="prbig">print( <span>lo que quieres ver</span> )</div>
+          <p id="prtext"></p>
+          <div class="row"><button class="btn" id="prrun">▶ Ejecutar</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- 3 -->
 <section class="scene" data-id="tipos" aria-label="Tipos de datos">
   <div class="inner">
@@ -414,12 +563,15 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
 <!-- 4 -->
 <section class="scene" data-id="lista" aria-label="Listas">
   <div class="inner">
-    <div><div class="eyebrow">Fundamentos</div><h2>Una lista es una fila de taquillas numeradas</h2></div>
+    <div><div class="eyebrow">Fundamentos</div><h2>Una lista guarda muchos valores bajo un solo nombre</h2></div>
     <div class="body">
-      <p class="lead">Cada taquilla guarda un valor. Ojo: la primera es la <b>0</b>. Abre una taquilla.</p>
-      <div class="lockers" id="lockers"></div>
-      <div class="code" id="lockcode"><span class="c"># edades = [22, 38, 26, 35, 35, 54, 2, 27, 14, 4, 58]</span>
-edades[?]</div>
+      <p class="lead">Un tarro con etiqueta guarda un valor. Para 11 edades harían falta 11 tarros… o una sola caja, con una etiqueta y compartimentos numerados desde el <b>0</b>.</p>
+      <div class="pack">
+        <div class="loose" id="loose"></div>
+        <div class="box"><span class="box-label">edades</span><div class="slots" id="slots"></div></div>
+      </div>
+      <div class="row"><button class="btn" id="packBtn">Guardar en una lista</button></div>
+      <div class="code" id="lockcode"></div>
     </div>
   </div>
 </section>
@@ -432,6 +584,82 @@ edades[?]</div>
       <p class="lead">Cada dato tiene un nombre (clave) en vez de una posición. Si apilamos fichas en una lista, tenemos nuestro primer dataset.</p>
       <div class="deck-wrap"><div class="deck" id="deck"><div class="head"><span>nombre</span><span>clase</span><span>sexo</span><span>edad</span><span>sobrevivio</span></div></div></div>
       <div class="row"><button class="btn" id="deckbtn">Apilar en una tabla</button></div>
+      <div class="code" id="dictcode"></div>
+    </div>
+  </div>
+</section>
+
+<!-- aritmeticos -->
+<section class="scene" data-id="aritmeticos" aria-label="Operadores aritméticos">
+  <div class="inner">
+    <div><div class="eyebrow">Fundamentos</div><h2>Operadores aritméticos: Python como calculadora</h2></div>
+    <div class="body">
+      <div class="seg" id="arseg"></div>
+      <div class="split" style="grid-template-columns:2fr 1fr;align-items:stretch">
+        <div class="calcwrap">
+          <div class="calc" id="calc" aria-live="polite"></div>
+          <p class="lead" id="arcap"></p>
+          <div class="code" id="arcode"></div>
+        </div>
+        <div class="panel arops">
+          <div class="eyebrow">Los siete operadores</div>
+          <table class="t"><tr><td><code>+</code></td><td>suma</td></tr><tr><td><code>-</code></td><td>resta</td></tr><tr><td><code>*</code></td><td>multiplicación</td></tr><tr><td><code>/</code></td><td>división</td></tr><tr><td><code>//</code></td><td>división entera</td></tr><tr><td><code>%</code></td><td>resto</td></tr><tr><td><code>**</code></td><td>potencia</td></tr></table>
+          <p class="hint">Orden: primero <code>**</code>, luego <code>*</code> <code>/</code> <code>//</code> <code>%</code>, y al final <code>+</code> <code>-</code>. Los paréntesis mandan.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- comparacion -->
+<section class="scene" data-id="comparacion" aria-label="Operadores de comparación">
+  <div class="inner">
+    <div><div class="eyebrow">Fundamentos</div><h2>Operadores de comparación: preguntas de sí o no</h2></div>
+    <div class="body">
+      <div class="lbuild">
+        <div class="lgroup"><span class="hint">Operador</span><div class="seg" id="cmpOp"></div></div>
+        <div class="lgroup cmpslide"><label class="hint" for="cmpVal">Valor: <b id="cmpValTxt">18</b> años</label><input type="range" id="cmpVal" min="0" max="60" step="1" value="18"></div>
+      </div>
+      <div class="split" style="grid-template-columns:2fr 1fr;align-items:stretch">
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="axiswrap"><div class="axis" id="cmpAxis"><div class="thr" id="cmpThr"></div></div></div>
+          <div class="code" id="cmpCode"></div>
+        </div>
+        <div class="panel arops">
+          <div class="eyebrow">Comparar</div>
+          <table class="t"><tr><td><code>==</code></td><td>igual</td></tr><tr><td><code>!=</code></td><td>distinto</td></tr><tr><td><code>&gt;</code></td><td>mayor que</td></tr><tr><td><code>&lt;</code></td><td>menor que</td></tr><tr><td><code>&gt;=</code></td><td>mayor o igual</td></tr><tr><td><code>&lt;=</code></td><td>menor o igual</td></tr></table>
+          <p class="hint">Siempre responden <code>True</code> o <code>False</code>.</p>
+          <p class="hint">Ojo: <code>=</code> guarda un valor; <code>==</code> pregunta si dos valores son iguales.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- logicos -->
+<section class="scene" data-id="logicos" aria-label="Operadores lógicos">
+  <div class="inner">
+    <div><div class="eyebrow">Fundamentos</div><h2>and, or, not: combinar condiciones</h2></div>
+    <div class="body">
+      <div class="lbuild">
+        <div class="lgroup"><span class="hint">Condición A</span><div class="seg" id="lgA"></div></div>
+        <div class="lgroup"><span class="hint">Operador</span><div class="seg" id="lgOp"></div></div>
+        <div class="lgroup"><span class="hint">Condición B</span><div class="seg" id="lgB"></div></div>
+        <div class="lgroup"><span class="hint">Invertir</span><div class="seg"><button id="lgNot" aria-pressed="false">not ( … )</button></div></div>
+      </div>
+      <div class="code" id="lgcode"></div>
+      <div class="split" style="grid-template-columns:2fr 1fr">
+        <div class="lpax" id="lgpax" aria-live="polite"></div>
+        <div class="panel lops">
+          <div class="eyebrow">Comparar</div>
+          <p><code>==</code> igual · <code>!=</code> distinto</p>
+          <p><code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code> mayor / menor</p>
+          <div class="eyebrow" style="margin-top:6px">Combinar</div>
+          <p><code>and</code> se cumplen <b>las dos</b></p>
+          <p><code>or</code> se cumple <b>al menos una</b></p>
+          <p><code>not</code> <b>lo contrario</b></p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -442,7 +670,8 @@ edades[?]</div>
     <div><div class="eyebrow">Fundamentos</div><h2>for repite, if decide</h2></div>
     <div class="body">
       <div class="row"><span class="hint">Contar pasajeros que cumplen:</span><div class="seg" id="loopcond"></div></div>
-      <div class="split">
+      <div class="split loopsplit" id="loopsplit">
+        <svg class="looplink" id="looplink" aria-hidden="true"><path class="lk-line" id="lkLine"/><path class="lk-brace" id="lkBrace"/><circle class="lk-dot" id="lkDot" r="5"/></svg>
         <div class="tbl-wrap"><table class="t" id="looptbl"></table></div>
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
           <div class="code" id="loopcode"></div>
@@ -500,6 +729,38 @@ edades[?]</div>
   </div>
 </section>
 
+<!-- vector -->
+<section class="scene" data-id="vector" aria-label="Vectorización">
+  <div class="inner">
+    <div><div class="eyebrow">NumPy</div><h2>Una operación, toda la columna</h2></div>
+    <div class="body">
+      <p class="lead">Un array de NumPy es una lista en la que <b>todos los elementos son del mismo tipo</b>. Por eso puede operar con la columna entera de una vez.</p>
+      <div class="vrow"><span class="vlabel">tarifas</span><div class="vcells" id="vcells"></div></div>
+      <div class="row"><button class="btn ghost" id="vLoop">▶ Lista + bucle</button><button class="btn" id="vNp">▶ Array de NumPy</button><button class="btn ghost" id="vReset">Restablecer</button><span class="dtype" id="vdtype">array · float64 · 12 elementos</span></div>
+      <div class="code" id="vcode"></div>
+    </div>
+  </div>
+</section>
+
+<!-- estadisticos -->
+<section class="scene" data-id="estadisticos" aria-label="Estadísticos">
+  <div class="inner">
+    <div><div class="eyebrow">NumPy</div><h2>Estadísticos en una línea</h2></div>
+    <div class="body">
+      <div class="seg" id="stSeg"></div>
+      <div class="axiswrap"><div class="axis staxis" id="stAxis"><div class="band" id="stBand"></div><div class="smark" id="stMark"><b></b></div></div><p class="hint" style="margin-top:4px">Tarifas de los 12 pasajeros (libras)</p></div>
+      <div class="split" style="align-items:stretch">
+        <div class="code" id="stCode"></div>
+        <div class="panel"><p id="stText"></p></div>
+      </div>
+      <div class="panel nanrow">
+        <div><div class="eyebrow">Datos que faltan</div><p class="hint">edades = [22, 38, 26, 35, 35, <b class="nanv">nan</b>, 54, 2, 27, 14, 4, 58]  (Moran no tiene edad)</p></div>
+        <div class="row"><button class="btn ghost" id="nanMean">np.mean(edades)</button><button class="btn ghost" id="nanNan">np.nanmean(edades)</button><span class="nanout" id="nanOut">?</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- 10 -->
 <section class="scene" data-id="colador" aria-label="Máscaras booleanas">
   <div class="inner">
@@ -553,12 +814,14 @@ edades[?]</div>
     <div><div class="eyebrow">Para llevar</div><h2>¿Lo tienes?</h2></div>
     <div class="body">
       <div class="split">
-        <div class="tbl-wrap"><table class="t"><tr><th>Concepto</th><th>Símil</th></tr><tr><td>Notebook / Colab</td><td>Cuaderno de laboratorio</td></tr><tr><td>Variable</td><td>Etiqueta de un tarro</td></tr><tr><td>Lista</td><td>Taquillas numeradas</td></tr><tr><td>Diccionario</td><td>Una ficha</td></tr><tr><td>Lista de diccionarios</td><td>Archivador de fichas</td></tr><tr><td>if / for</td><td>Decidir / repetir</td></tr><tr><td>Función</td><td>Receta</td></tr><tr><td>Array de NumPy</td><td>Cinta transportadora</td></tr><tr><td>Máscara booleana</td><td>Colador</td></tr></table></div>
+        <div class="tbl-wrap sumtbl"><table class="t"><tr><th>Concepto</th><th>Símil o idea clave</th></tr><tr><td>Notebook / Colab</td><td>Cuaderno de laboratorio</td></tr><tr><td><code>print()</code></td><td>Decirle al notebook «enséñame esto»</td></tr><tr><td>Variable / tipo</td><td>Etiqueta de un tarro; el tipo decide qué puedes hacer</td></tr><tr><td>Lista</td><td>Caja con compartimentos numerados desde 0</td></tr><tr><td>Diccionario</td><td>Una ficha: cada dato con su nombre</td></tr><tr><td>Lista de diccionarios</td><td>Archivador de fichas = una tabla</td></tr><tr><td><code>+ - * / // % **</code></td><td>Python como calculadora</td></tr><tr><td><code>== != &gt; &lt; &gt;= &lt;=</code></td><td>Preguntas de sí o no</td></tr><tr><td><code>and or not</code></td><td>Combinar condiciones</td></tr><tr><td><code>for</code> / <code>if</code></td><td>Repetir / decidir</td></tr><tr><td>Función</td><td>Receta reutilizable</td></tr><tr><td>Array de NumPy</td><td>Cinta transportadora</td></tr><tr><td>Vectorización</td><td>Una operación, toda la columna</td></tr><tr><td>Estadísticos</td><td><code>mean</code>, <code>median</code>, <code>std</code>… en una línea</td></tr><tr><td><code>np.nan</code></td><td>Dato que falta: usa <code>nanmean</code></td></tr><tr><td>Máscara booleana</td><td>Colador</td></tr></table></div>
         <div class="qa">
           <details><summary>1. ¿Por qué "22" + 1 da error?</summary><p>Mezcla texto y número. Se arregla con int("22") + 1.</p></details>
           <details><summary>2. ¿Qué devuelve vivos.mean() con ceros y unos?</summary><p>La proporción de unos: el porcentaje de supervivientes.</p></details>
           <details><summary>3. ¿Qué ventaja tiene tarifas[clases == 1]?</summary><p>Más corto, más legible y mucho más rápido que un bucle.</p></details>
           <details><summary>4. Dos cosas incómodas del CSV completo</summary><p>Todo llega como texto y los vacíos se tratan a mano. Eso resuelve Pandas.</p></details>
+          <details><summary>5. ¿Qué diferencia hay entre = y ==?</summary><p>= guarda un valor en una variable; == pregunta si dos valores son iguales y responde True o False.</p></details>
+          <details><summary>6. ¿Por qué la media de las tarifas (26) es mayor que la mediana (19)?</summary><p>Unos pocos billetes de primera clase muy caros tiran de la media hacia arriba; la mediana, el valor central, apenas se mueve.</p></details>
         </div>
       </div>
       <p class="hint">Para la sesión 2: instala VS Code y la extensión de Google Colab, y piensa un tema de negocio para tu proyecto.</p>
@@ -643,16 +906,75 @@ pickJar(0);
 $('#errbtn').onclick=()=>{$('#errcode').innerHTML='"22" + 1\n<span class="err">TypeError: can only concatenate str (not "int") to str</span>'};
 $('#fixbtn').onclick=()=>{$('#errcode').innerHTML='int("22") + 1\n<span class="k">23</span>'};
 
-/* 4 Taquillas */
+/* 4 Lista: 11 tarros sueltos → una caja con una etiqueta */
 const E=[22,38,26,35,35,54,2,27,14,4,58];
-E.forEach((v,i)=>{const b=document.createElement('button');b.className='locker';b.setAttribute('aria-label','Taquilla '+i);b.innerHTML=`<span class="val">${v}</span><span class="door"><em>${i}</em></span>`;b.onclick=()=>openLocker(i);$('#lockers').appendChild(b)});
-function openLocker(i){$$('.locker').forEach((b,k)=>b.classList.toggle('open',k===i));$('#lockcode').innerHTML=`<span class="c"># edades = [22, 38, 26, 35, 35, 54, 2, 27, 14, 4, 58]</span>\nedades[${i}]   <span class="k"># ${E[i]}</span>${i===0?'   <span class="c">← la primera es la 0</span>':''}`}
-enter.lista=async()=>{$$('.locker').forEach(b=>b.classList.remove('open'));await wait(500);openLocker(0)};
+const LIST='edades = ['+E.join(', ')+']';
+let packed=false;
+function listBuild(){packed=false;packRun++;$('#packBtn').disabled=false;const loose=$('#loose'),slots=$('#slots');loose.innerHTML='';slots.innerHTML='';loose.hidden=false;loose.classList.remove('fade');
+  E.forEach((v,i)=>{const j=document.createElement('div');j.className='mjar';j.innerHTML=`<span class="lid"></span><span class="neck"></span><span class="glass"><span class="tag">edad_${i+1}</span><span class="vchip">${v}</span></span>`;loose.appendChild(j);
+    const s=document.createElement('button');s.className='slot';s.disabled=true;s.setAttribute('aria-label','Posición '+i);s.innerHTML=`<span class="v"></span><span class="i">${i}</span>`;s.onclick=()=>listPick(i);slots.appendChild(s)});
+  $('#packBtn').textContent='Guardar en una lista';
+  $('#lockcode').innerHTML=E.map((v,i)=>`edad_${i+1} = ${v}`).slice(0,3).join('\n')+'\n<span class="c">…</span>\nedad_11 = 58   <span class="c"># 11 variables para 11 edades</span>'}
+let packRun=0;
+async function listPack(){if(packed){packRun++;listBuild();return}packed=true;const run=++packRun;
+  const jars=$$('#loose .mjar'),slots=$$('#slots .slot'),btn=$('#packBtn'),code=$('#lockcode');btn.disabled=true;
+  code.innerHTML='edades = [';let done=[];
+  for(let i=0;i<E.length;i++){if(run!==packRun)return;
+    const jar=jars[i],chip=jar.querySelector('.vchip'),dest=slots[i].querySelector('.v');
+    jar.classList.add('opening');await wait(260);if(run!==packRun)return;
+    const a=chip.getBoundingClientRect();dest.appendChild(chip);const b=chip.getBoundingClientRect();
+    const dx=a.left-b.left,dy=a.top-b.top;
+    if(!reduce){chip.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:`translate(${dx*.55}px,${dy*.55-70}px) scale(1.25)`,offset:.45},{transform:'translate(0,0) scale(1)'}],{duration:850,easing:'cubic-bezier(.45,.05,.3,1)'})}
+    jar.classList.add('empty');await wait(800);if(run!==packRun)return;
+    slots[i].classList.remove('land');void slots[i].offsetWidth;slots[i].classList.add('land');
+    done.push(E[i]);code.innerHTML='edades = ['+done.join(', ')+(i<E.length-1?'<span class="tcaret"></span>':']');
+    await wait(180)}
+  if(run!==packRun)return;await wait(500);
+  const box=$('.box'),before=box.getBoundingClientRect();$('#loose').classList.add('fade');await wait(500);if(run!==packRun)return;
+  $('#loose').hidden=true;const after=box.getBoundingClientRect();
+  if(!reduce)box.animate([{transform:`translateY(${before.top-after.top}px)`},{transform:'none'}],{duration:600,easing:'cubic-bezier(.3,.7,.3,1)'});
+  slots.forEach(s=>s.disabled=false);btn.disabled=false;btn.textContent='Volver a los tarros';
+  code.innerHTML=`${LIST}\n<span class="c"># 1 variable, 11 valores · len(edades) = 11</span>`;
+  await wait(1200);if(run===packRun&&packed)listPick(0)}
+function listPick(i){$$('#slots .slot').forEach((s,k)=>s.classList.toggle('sel',k===i));
+  $('#lockcode').innerHTML=`${LIST}\n\nedades[${i}]   <span class="k"># ${E[i]}</span>${i===0?'   <span class="c">← el primero es el 0</span>':''}`}
+$('#packBtn').onclick=listPack;listBuild();enter.lista=listBuild;
+
+/* print(): cada línea se ejecuta y, si imprime, su salida aparece debajo */
+const PRE=['nombre = "Braund"','edad = 22'];
+const PR={
+"Sin print":{code:[...PRE,'nombre','edad'],out:[null,null,null,['22','← solo la última línea']],txt:'Sin print(), el notebook solo enseña el valor de la <b>última línea</b> de la celda. «Braund» no aparece.'},
+"Con print":{code:[...PRE,'print(nombre)','print(edad)'],out:[null,null,['Braund'],['22']],txt:'Con print() decides qué se muestra: cada print() escribe <b>una línea</b> en la salida, en el orden en que se ejecuta.'},
+"Varios valores":{code:[...PRE,'print("Pasajero:", nombre, "· Edad:", edad)'],out:[null,null,['Pasajero: Braund · Edad: 22']],txt:'Puedes pasarle varias cosas separadas por <b>comas</b>: print() las escribe seguidas, con un espacio entre ellas.'},
+"f-string":{code:[...PRE,'print(f"{nombre} tenía {edad} años")'],out:[null,null,['Braund tenía 22 años']],txt:'Con una <b>f</b> delante de las comillas, lo que va entre <b>{ }</b> se sustituye por su valor. Es la forma más cómoda de escribir frases con datos.'}};
+let prk="Sin print",prId=0;
+const hlCode=s=>s.replace(/(print)(\()/g,'<span class="k">$1</span>$2');
+function prShow(k,run){prk=k;const e=PR[k],id=++prId;$$('#prseg button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===k));
+  $('#prtext').innerHTML=e.txt;const out=$('#prout');
+  const draw=h=>{$('#prcode').innerHTML=e.code.map((l,i)=>`<span class="ln${h===i?' hl':''}">${hlCode(l)}</span>`).join('')};
+  const line=o=>`<span class="o">${o[0]}${o[1]?`<small>${o[1]}</small>`:''}</span>`;
+  if(!run){draw(-1);out.innerHTML=e.out.filter(Boolean).map(line).join('')||'<span class="o empty">Sin salida</span>';return}
+  out.innerHTML='<span class="o empty">Ejecutando…</span>';$('#prrun').disabled=true;
+  (async()=>{let first=true;for(let i=0;i<e.code.length;i++){if(id!==prId)return;draw(i);await wait(650);if(id!==prId)return;
+      if(e.out[i]){if(first){out.innerHTML='';first=false}out.insertAdjacentHTML('beforeend',line(e.out[i]))}await wait(250)}
+    if(id!==prId)return;draw(-1);$('#prrun').disabled=false})()}
+Object.keys(PR).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>prShow(k,true);$('#prseg').appendChild(b)});
+$('#prrun').onclick=()=>prShow(prk,true);
+prShow("Sin print",false);enter.print=()=>{prId++;$('#prrun').disabled=false;prShow(prk,false)};
 
 /* 5 Fichas */
 const deck=$('#deck');P.slice(0,4).forEach(p=>{const d=document.createElement('dl');d.className='ficha';d.innerHTML=`<dt>nombre</dt><dd>${short(p.nombre)}</dd><dt>clase</dt><dd>${p.clase}</dd><dt>sexo</dt><dd>${p.sexo}</dd><dt>edad</dt><dd>${p.edad}</dd><dt>sobrevivio</dt><dd>${p.sobrevivio}</dd>`;deck.appendChild(d)});
-function flip(els,mutate){const a=els.map(e=>e.getBoundingClientRect());mutate();if(reduce)return;els.forEach((e,i)=>{const b=e.getBoundingClientRect();e.animate([{transform:`translate(${a[i].left-b.left}px,${a[i].top-b.top}px)`},{transform:'none'}],{duration:650,easing:'cubic-bezier(.3,.7,.3,1)',delay:i*60,fill:'backwards'})})}
-$('#deckbtn').onclick=()=>{const t=!deck.classList.contains('tabla');flip($$('#deck .ficha'),()=>deck.classList.toggle('tabla',t));$('#deckbtn').textContent=t?'Volver a las fichas':'Apilar en una tabla'};
+function flip(els,mutate,o={}){const dur=o.duration||650,stag=o.stagger||60;const a=els.map(e=>e.getBoundingClientRect());mutate();if(reduce)return;els.forEach((e,i)=>{const b=e.getBoundingClientRect();const dx=a[i].left-b.left,dy=a[i].top-b.top;
+  const kf=o.lift?[{transform:`translate(${dx}px,${dy}px)`},{transform:`translate(${dx*.5}px,${dy*.5-40}px) scale(1.04)`,boxShadow:'0 18px 30px -12px rgba(20,33,61,.45)',offset:.5},{transform:'none'}]:[{transform:`translate(${dx}px,${dy}px)`},{transform:'none'}];
+  e.animate(kf,{duration:dur,easing:'cubic-bezier(.45,.05,.3,1)',delay:i*stag,fill:'backwards'})})}
+/* Cómo se escribe en Python: una ficha = un diccionario; muchas fichas = una lista de diccionarios */
+const kv=(k,v)=>`<span class="k">"${k}"</span>: ${typeof v==='string'?'"'+v+'"':v}`;
+const dictOf=p=>`{${kv('nombre',short(p.nombre))}, ${kv('clase',p.clase)}, ${kv('sexo',p.sexo)}, ${kv('edad',p.edad)}, ${kv('sobrevivio',p.sobrevivio)}}`;
+function dictCode(t){const p=P[0];$('#dictcode').innerHTML=t
+  ?`mini_titanic = [\n${P.slice(0,4).map(q=>'    '+dictOf(q)).join(',\n')},\n]\n\nmini_titanic[0]["edad"]   <span class="c"># 22 → fila 0, clave "edad"</span>`
+  :`pasajero = {\n    ${kv('nombre',short(p.nombre))},\n    ${kv('clase',p.clase)},\n    ${kv('sexo',p.sexo)},\n    ${kv('edad',p.edad)},\n    ${kv('sobrevivio',p.sobrevivio)},\n}\n\npasajero["edad"]   <span class="c"># 22 → se pide por su nombre (clave), no por posición</span>`}
+dictCode(false);
+$('#deckbtn').onclick=()=>{const t=!deck.classList.contains('tabla');flip($$('#deck .ficha'),()=>deck.classList.toggle('tabla',t));$('#deckbtn').textContent=t?'Volver a las fichas':'Apilar en una tabla';dictCode(t)};
 
 /* 6 Bucle */
 const C={"sobrevivio == 1":p=>p.sobrevivio===1,'sexo == "female"':p=>p.sexo==="female","clase == 1":p=>p.clase===1};
@@ -660,12 +982,123 @@ let cond="sobrevivio == 1";
 const segL=$('#loopcond');Object.keys(C).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.setAttribute('aria-pressed',k===cond);b.onclick=()=>{cond=k;$$('#loopcond button').forEach(x=>x.setAttribute('aria-pressed',x===b));loopReset()};segL.appendChild(b)});
 $('#looptbl').innerHTML='<tr><th>nombre</th><th>clase</th><th>sexo</th><th>sobrevivio</th></tr>'+P.map(p=>`<tr><td>${short(p.nombre)}</td><td>${p.clase}</td><td>${p.sexo}</td><td>${p.sobrevivio}</td></tr>`).join('');
 function loopCode(h){const L=['contador = 0',`<span class="k">for</span> p <span class="k">in</span> mini_titanic:`,`    <span class="k">if</span> ${cond.replace(/^(\w+)/,'p["$1"]')}:`,'        contador += 1'];$('#loopcode').innerHTML=L.map((l,i)=>`<span class="ln${h===i?' hl':''}">${l}</span>`).join('')}
+/* Une la fila en curso con el bloque del for: una línea que termina en una llave  -----{  */
+function loopLink(i){const svg=$('#looplink');if(i==null){svg.classList.remove('on');return}
+  const split=$('#loopsplit'),code=$('#loopcode'),wrap=$('#looptbl').parentElement,row=$$('#looptbl tr')[i+1],lines=$$('#loopcode .ln');
+  const S=split.getBoundingClientRect(),C2=code.getBoundingClientRect(),W=wrap.getBoundingClientRect(),R=row.getBoundingClientRect();
+  if(C2.left<W.right){svg.classList.remove('on');return} /* columnas apiladas en pantallas estrechas */
+  const l1=lines[1].getBoundingClientRect(),l3=lines[3].getBoundingClientRect();
+  const x1=W.right-S.left+2,y1=R.top+R.height/2-S.top;
+  const bx=C2.left-S.left-22,yt=l1.top-S.top+2,yb=l3.bottom-S.top-2,ym=(yt+yb)/2,w=14,h=w/2,r=8;
+  $('#lkBrace').setAttribute('d',`M${bx+w},${yt} Q${bx+h},${yt} ${bx+h},${yt+r} L${bx+h},${ym-r} Q${bx+h},${ym} ${bx},${ym} Q${bx+h},${ym} ${bx+h},${ym+r} L${bx+h},${yb-r} Q${bx+h},${yb} ${bx+w},${yb}`);
+  const mx=(x1+bx)/2;$('#lkLine').setAttribute('d',`M${x1},${y1} C${mx},${y1} ${mx},${ym} ${bx-4},${ym}`);
+  $('#lkDot').setAttribute('cx',x1);$('#lkDot').setAttribute('cy',y1);svg.classList.add('on')}
 let loopRun=0;
-function loopReset(){loopRun++;$$('#looptbl tr').forEach(r=>r.classList.remove('cur','hit'));$('#loopcount').textContent='0';$('#looprate').textContent='';loopCode(-1);$('#loopplay').disabled=false}
+function loopReset(){loopRun++;$$('#looptbl tr').forEach(r=>r.classList.remove('cur','hit'));$('#loopcount').textContent='0';$('#looprate').textContent='';loopCode(-1);loopLink(null);$('#loopplay').disabled=false}
 async function loopPlay(){const id=++loopRun;$('#loopplay').disabled=true;$$('#looptbl tr').forEach(r=>r.classList.remove('cur','hit'));let n=0;$('#loopcount').textContent='0';loopCode(0);await wait(400);const rows=$$('#looptbl tr').slice(1);
-  for(let i=0;i<P.length;i++){if(id!==loopRun)return;rows.forEach(r=>r.classList.remove('cur'));rows[i].classList.add('cur');loopCode(1);await wait(220);loopCode(2);await wait(220);if(C[cond](P[i])){n++;rows[i].classList.add('hit');loopCode(3);$('#loopcount').textContent=n;await wait(220)}}
-  if(id!==loopRun)return;rows.forEach(r=>r.classList.remove('cur'));loopCode(-1);$('#looprate').textContent=`de 12 → ${Math.round(n/12*100)} %`;$('#loopplay').disabled=false}
+  for(let i=0;i<P.length;i++){if(id!==loopRun)return;rows.forEach(r=>r.classList.remove('cur'));rows[i].classList.add('cur');
+    loopLink(i);loopCode(1);await wait(450);if(id!==loopRun)return;loopCode(2);await wait(450);if(id!==loopRun)return;
+    if(C[cond](P[i])){n++;rows[i].classList.add('hit');loopCode(3);$('#loopcount').textContent=n;await wait(400)}}
+  if(id!==loopRun)return;rows.forEach(r=>r.classList.remove('cur'));loopCode(-1);loopLink(null);$('#looprate').textContent=`de 12 → ${Math.round(n/12*100)} %`;$('#loopplay').disabled=false}
 loopReset();$('#loopplay').onclick=loopPlay;enter.bucle=loopReset;
+
+/* Operadores aritméticos: un ejemplo de negocio por operador */
+const AR=[
+{op:'+',name:'suma',a:['edad','22'],b:['','1'],r:'23',rl:'edad el próximo año',cap:'Mr. Braund cumplirá 23 años: para calcular edades futuras, sumamos.',code:'edad + 1'},
+{op:'-',name:'resta',a:['','1912'],b:['edad','22'],r:'1890',rl:'año de nacimiento aprox.',cap:'Restando la edad al año del viaje estimamos cuándo nació.',code:'1912 - edad'},
+{op:'*',name:'multiplicación',a:['tarifa','7.25'],b:['','1.10'],r:'7.98',rl:'tarifa +10 %',cap:'Subir la prima un 10 % es multiplicar por 1.10.',code:'round(tarifa * 1.10, 2)'},
+{op:'/',name:'división',a:['tarifa Cumings','71.28'],b:['tarifa Braund','7.25'],r:'9.83',rl:'veces más',cap:'Mrs. Cumings pagó casi 10 veces más que Mr. Braund. La división siempre da decimales.',code:'round(71.28 / 7.25, 2)'},
+{op:'//',name:'división entera',a:['pasajeros','891'],b:['por lote','12'],r:'74',rl:'lotes completos',cap:'Si revisamos los expedientes en lotes de 12, salen 74 lotes completos.',code:'891 // 12'},
+{op:'%',name:'resto',a:['pasajeros','891'],b:['por lote','12'],r:'3',rl:'expedientes sueltos',cap:'Sobran 3 expedientes: % da lo que sobra al repartir en grupos iguales. Se usa para saber si un número es par, para hacer algo cada N filas (por ejemplo, revisar uno de cada 10 expedientes) o para repartir en turnos.',code:'891 % 12',more:'22 % 2 == 0      <span class="c"># True → 22 es par</span>\n7 % 10 == 0      <span class="c"># False → el expediente 7 no toca revisión (sí el 10, 20, 30…)</span>'},
+{op:'**',name:'potencia',a:['prima','100'],b:['','1.05 ** 3'],r:'115.76',rl:'prima tras 3 años al 5 %',cap:'Una prima de 100 que sube un 5 % cada año durante 3 años. ** se calcula antes que *.',code:'round(100 * 1.05 ** 3, 2)',mid:'*'}];
+let arI=0;
+AR.forEach((e,i)=>{const b=document.createElement('button');b.innerHTML=`<b>${e.op}</b>${e.name}`;b.onclick=()=>arShow(i,true);$('#arseg').appendChild(b)});
+function arShow(i,play){arI=i;const e=AR[i];$$('#arseg button').forEach((b,k)=>b.setAttribute('aria-pressed',k===i));
+  const tok=(x,cls='')=>`<span class="tok ${cls}">${x[1]}${x[0]?`<small>${x[0]}</small>`:''}</span>`;
+  const c=$('#calc');c.classList.remove('play');
+  c.innerHTML=`${tok(e.a)}<span class="opx">${e.mid||e.op}</span>${tok(e.b)}<span class="eq">=</span>${tok([e.rl,e.r],'res')}`;
+  if(play&&!reduce){void c.offsetWidth;c.classList.add('play')}
+  $('#arcap').textContent=e.cap;$('#arcode').innerHTML=`${e.code}   <span class="c"># ${e.r}</span>`+(e.more?`\n\n${e.more}`:'')}
+arShow(0,false);enter.aritmeticos=()=>arShow(arI,false);
+
+/* Operadores de comparación: edad <op> valor sobre un eje de 0 a 60 años */
+const CO={'==':(a,b)=>a===b,'!=':(a,b)=>a!==b,'>':(a,b)=>a>b,'<':(a,b)=>a<b,'>=':(a,b)=>a>=b,'<=':(a,b)=>a<=b};
+let cmp={op:'<',v:18};
+Object.keys(CO).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>{cmp.op=k;cmpRender()};$('#cmpOp').appendChild(b)});
+(()=>{const ax=$('#cmpAxis');for(let t=0;t<=60;t+=10)ax.insertAdjacentHTML('beforeend',`<span class="tick" style="left:${t/60*100}%">${t}</span>`);
+  /* apila en niveles los puntos que quedarían solapados (menos de ~3,5 años de distancia) */
+  const last=[];P.map((p,i)=>({p,i})).filter(o=>o.p.edad!=null).sort((x,y)=>x.p.edad-y.p.edad).forEach(({p,i})=>{
+    let lvl=0;while(last[lvl]!=null&&p.edad-last[lvl]<3.5)lvl++;last[lvl]=p.edad;
+    ax.insertAdjacentHTML('beforeend',`<div class="dot" data-i="${i}" title="${short(p.nombre)}, ${p.edad} años" style="left:${p.edad/60*100}%;bottom:${10+lvl*42}px">${p.edad}</div>`)})})();
+$('#cmpThr').innerHTML='<b></b>';
+$('#cmpVal').addEventListener('input',e=>{cmp.v=+e.target.value;cmpRender()});
+function cmpRender(){$$('#cmpOp button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===cmp.op));$('#cmpValTxt').textContent=cmp.v;
+  const thr=$('#cmpThr');thr.style.left=(cmp.v/60*100)+'%';thr.querySelector('b').textContent=cmp.v;
+  let n=0;const yes=[];$$('#cmpAxis .dot').forEach(d=>{const p=P[+d.dataset.i],r=CO[cmp.op](p.edad,cmp.v);d.classList.toggle('yes',r);if(r){n++;yes.push(short(p.nombre))}});
+  $('#cmpCode').innerHTML=`edad ${cmp.op} ${cmp.v}\n<span class="c"># True en </span><span class="k">${n} de 11</span><span class="c"> pasajeros con edad conocida${n&&n<=5?': '+yes.join(', '):''}</span>\n<span class="c"># Moran no tiene edad (None): no se puede comparar</span>`}
+cmpRender();
+
+/* Vectorización: la lista se actualiza celda a celda; el array, todo a la vez */
+const TF=P.map(p=>p.tarifa);let vRun=0;
+const fmt2=x=>x.toFixed(2);
+function vBuild(){vRun++;$('#vcells').innerHTML=TF.map(t=>`<div class="vc">${fmt2(t)}</div>`).join('');$('#vLoop').disabled=false;$('#vNp').disabled=false;
+  $('#vcode').innerHTML='tarifas = np.array([7.25, 71.28, 7.93, …])\n<span class="c"># ¿Subir todas las tarifas un 10 %?</span>'}
+async function vLoop(){const id=++vRun;vBuild();vRun=id;$('#vLoop').disabled=$('#vNp').disabled=true;const cells=$$('#vcells .vc');
+  $('#vcode').innerHTML='nuevas = []\n<span class="k">for</span> t <span class="k">in</span> tarifas_lista:\n    nuevas.append(round(t * 1.10, 2))   <span class="c"># una a una</span>';
+  for(let i=0;i<cells.length;i++){if(id!==vRun)return;cells[i].classList.add('cur');await wait(260);if(id!==vRun)return;cells[i].textContent=fmt2(TF[i]*1.1);cells[i].classList.remove('cur');cells[i].classList.add('new')}
+  $('#vLoop').disabled=$('#vNp').disabled=false}
+async function vNp(){const id=++vRun;vBuild();vRun=id;$('#vLoop').disabled=$('#vNp').disabled=true;
+  $('#vcode').innerHTML='nuevas = (tarifas * 1.10).round(2)   <span class="c"># toda la columna de una vez</span>\n\n<span class="c"># Mezclar tipos no funciona igual:</span>\nnp.array([22, "Braund"])   <span class="c"># todo se convierte en texto: [\'22\' \'Braund\']</span>';
+  await wait(400);if(id!==vRun)return;$$('#vcells .vc').forEach((c,i)=>{c.textContent=fmt2(TF[i]*1.1);c.classList.add('new','flash')});
+  $('#vLoop').disabled=$('#vNp').disabled=false}
+$('#vLoop').onclick=vLoop;$('#vNp').onclick=vNp;$('#vReset').onclick=vBuild;vBuild();enter.vector=vBuild;
+
+/* Estadísticos sobre las tarifas */
+const srt=[...TF].sort((a,b)=>a-b),NT=TF.length,mean=TF.reduce((a,b)=>a+b,0)/NT;
+const med=(srt[NT/2-1]+srt[NT/2])/2,std=Math.sqrt(TF.reduce((a,b)=>a+(b-mean)**2,0)/NT);
+const pct=q=>{const h=(NT-1)*q,lo=Math.floor(h);return srt[lo]+(h-lo)*(srt[lo+1]-srt[lo])};
+const STX=75,ST={
+'media':{v:mean,code:'tarifas.mean()',txt:'La media suma todas las tarifas y divide entre 12. Los billetes caros de primera clase la tiran hacia arriba.'},
+'mediana':{v:med,code:'np.median(tarifas)',txt:'La mediana es el valor del centro: la mitad pagó menos y la otra mitad más. Fíjate en lo lejos que queda de la media: hay unos pocos billetes muy caros.'},
+'desviación':{v:mean,band:std,code:'tarifas.std()',txt:'La desviación típica mide cuánto se alejan los valores de la media. La franja va de la media menos una desviación a la media más una.'},
+'mínimo':{v:srt[0],code:'tarifas.min()',txt:'La tarifa más barata.'},
+'máximo':{v:srt[NT-1],code:'tarifas.max()',txt:'La tarifa más cara: Mrs. Cumings, en primera clase.'},
+'percentil 75':{v:pct(.75),code:'np.percentile(tarifas, 75)',txt:'El 75 % de los pasajeros pagó esta tarifa o menos.'}};
+let stK=null;
+(()=>{const ax=$('#stAxis');for(let t=0;t<=STX;t+=15)ax.insertAdjacentHTML('beforeend',`<span class="tick" style="left:${t/STX*100}%">${t}</span>`);
+  const last=[];P.map((p,i)=>({p,i})).sort((x,y)=>x.p.tarifa-y.p.tarifa).forEach(({p})=>{let l=0;while(last[l]!=null&&p.tarifa-last[l]<3)l++;last[l]=p.tarifa;
+    ax.insertAdjacentHTML('beforeend',`<div class="dot yes" title="${short(p.nombre)}: ${fmt2(p.tarifa)}" style="left:${p.tarifa/STX*100}%;bottom:${8+l*32}px">·</div>`)})})();
+Object.keys(ST).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>stShow(k);$('#stSeg').appendChild(b)});
+function stShow(k){stK=k;const e=ST[k];$$('#stSeg button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===k));
+  const m=$('#stMark');m.classList.add('on');m.style.left=(e.v/STX*100)+'%';m.querySelector('b').textContent=fmt2(e.v)+(e.band?' ± '+fmt2(e.band):'');
+  const bd=$('#stBand');if(e.band){bd.style.left=((e.v-e.band)/STX*100)+'%';bd.style.width=(2*e.band/STX*100)+'%';bd.classList.add('on')}else bd.classList.remove('on');
+  $('#stCode').innerHTML=`${e.code}   <span class="k"># ${fmt2(e.band||e.v)}</span>\n\n<span class="c"># media ${fmt2(mean)} · mediana ${fmt2(med)}</span>`;$('#stText').textContent=e.txt}
+function stReset(){stK=null;$$('#stSeg button').forEach(b=>b.setAttribute('aria-pressed','false'));$('#stMark').classList.remove('on');$('#stBand').classList.remove('on');
+  $('#stCode').innerHTML='tarifas.?()   <span class="c"># elige un estadístico</span>';$('#stText').textContent='Elige un estadístico para verlo sobre las 12 tarifas.';$('#nanOut').textContent='?';$('#nanOut').className='nanout'}
+const EDn=P.map(p=>p.edad).filter(x=>x!=null),nanm=EDn.reduce((a,b)=>a+b,0)/EDn.length;
+$('#nanMean').onclick=()=>{const o=$('#nanOut');o.textContent='nan';o.className='nanout bad'};
+$('#nanNan').onclick=()=>{const o=$('#nanOut');o.textContent=nanm.toFixed(1);o.className='nanout good'};
+stReset();enter.estadisticos=stReset;
+
+/* Operadores lógicos: A (and|or) B, con not opcional, sobre los 12 pasajeros */
+const LA={'sexo == "female"':p=>p.sexo==='female','sexo == "male"':p=>p.sexo==='male','clase == 1':p=>p.clase===1};
+const LB={'clase == 3':p=>p.clase===3,'sobrevivio == 1':p=>p.sobrevivio===1,'tarifa > 20':p=>p.tarifa>20,'clase != 1':p=>p.clase!==1};
+let lg={a:'sexo == "female"',op:'and',b:'clase == 3',not:false};
+const pyc=c=>c.replace(/^(\w+)/,'p["$1"]');
+function lgSeg(id,opts,key){Object.keys(opts).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>{lg[key]=k;lgRender()};$(id).appendChild(b)})}
+lgSeg('#lgA',LA,'a');lgSeg('#lgB',LB,'b');lgSeg('#lgOp',{and:1,or:1},'op');
+$('#lgNot').onclick=()=>{lg.not=!lg.not;lgRender()};
+$('#lgpax').innerHTML=P.map(p=>`<div class="lp"><b>${short(p.nombre)}</b><span class="ab"><i class="a">A</i><i class="b">B</i></span></div>`).join('');
+function lgRender(){
+  $$('#lgA button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===lg.a));$$('#lgB button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===lg.b));
+  $$('#lgOp button').forEach(b=>b.setAttribute('aria-pressed',b.textContent===lg.op));$('#lgNot').setAttribute('aria-pressed',lg.not);
+  const fa=LA[lg.a],fb=LB[lg.b];let n=0;
+  $$('#lgpax .lp').forEach((el,i)=>{const p=P[i],a=fa(p),b=fb(p);let r=lg.op==='and'?a&&b:a||b;if(lg.not)r=!r;if(r)n++;
+    const ia=el.querySelector('.a'),ib=el.querySelector('.b');ia.classList.toggle('on',a);ib.classList.toggle('on',b);ia.textContent='A '+(a?'✓':'✗');ib.textContent='B '+(b?'✓':'✗');
+    el.classList.toggle('match',r);el.style.transitionDelay=(reduce?0:i*35)+'ms'});
+  let expr=`${pyc(lg.a)} <span class="k">${lg.op}</span> ${pyc(lg.b)}`;if(lg.not)expr=`<span class="k">not</span> (${expr})`;
+  $('#lgcode').innerHTML=`<span class="k">if</span> ${expr}:\n<span class="c"># A = ${lg.a} · B = ${lg.b}</span>\n<span class="c"># cumplen </span><span class="k">${n} de 12</span><span class="c"> pasajeros</span>`}
+lgRender();
 
 /* 7 Función */
 const G={"todos":P,"mujeres":P.filter(p=>p.sexo==="female"),"hombres":P.filter(p=>p.sexo==="male"),"1ª clase":P.filter(p=>p.clase===1),"3ª clase":P.filter(p=>p.clase===3)};
@@ -740,13 +1173,19 @@ enter.encargo=()=>{replay($('#letter'));replay($('#qs'))};
 const B={
 notebook:"Abrimos expediente. Todo análisis debe quedar registrado en un cuaderno que otro analista pueda revisar.",
 orden:"Auditoría interna: el informe tiene que poder repetirse paso a paso y dar siempre el mismo resultado.",
+print:"La Dirección quiere ver en pantalla los datos de cada expediente, no solo el último.",
 tipos:"Primer expediente: la ficha de Mr. Braund. Comprueba que cada dato está en el formato correcto antes de calcular nada.",
-lista:"Nos han pasado las edades de los asegurados en una lista. ¿Qué edad tiene el primero?",
+lista:"Nos llegan las edades de los asegurados una a una. Guárdalas juntas, bajo un solo nombre, y dinos la del primero.",
 fichas:"El archivo de pólizas llega en fichas sueltas. Conviértelo en una tabla con la que podamos trabajar.",
 bucle:"Revisa las pólizas una a una: ¿cuántos asegurados sobrevivieron?",
+aritmeticos:"Cálculos rápidos para la Dirección: subir primas, estimar edades y repartir expedientes en lotes.",
+comparacion:"¿Cuántos asegurados son menores de edad? Compara cada edad con un umbral.",
+logicos:"El comité quiere perfiles más finos: por ejemplo, mujeres que viajaban en tercera clase. Combina condiciones.",
 funcion:"La Dirección quiere el mismo cálculo para cada perfil de cliente. Hazlo una vez y reutilízalo.",
 muestra:"El comité pregunta si debemos cobrar más a los hombres. ¿Podemos decidirlo con 12 expedientes?",
 numpy:"Pronto llegarán miles de pólizas. El cálculo tiene que ser rápido.",
+vector:"La Dirección sube todas las tarifas un 10 %. Aplícalo a todas las pólizas.",
+estadisticos:"El comité quiere un resumen: ¿cuánto paga un pasajero típico?",
 colador:"Separa las pólizas que cumplen una condición y calcula su tarifa media.",
 noescala:"Ha llegado el registro completo: 891 pasajeros. Rehaz el análisis.",
 pandas:"Esta será la herramienta del departamento a partir de la próxima semana.",
@@ -762,17 +1201,23 @@ encargo:["0:08 · 4 min","Durante el taller sois analistas de riesgos de una ase
 portada:["0:00 · 5 min","Hoy vamos a pasar de no haber abierto nunca un notebook a analizar los 891 pasajeros del Titanic. No vais a salir programadores; vais a salir sabiendo qué se puede hacer con Python y cuándo pedirlo.",["Preséntate y cuenta el taller: 3 sesiones de Python y 1 de R, con el Titanic como hilo.","Pide que abran ya el enlace del notebook y hagan «Guardar una copia en Drive».","Anuncia el proyecto individual de la sesión 3: un dataset de negocio y 3 preguntas.","Mano alzada: ¿quién ha programado alguna vez? Sienta juntos perfiles técnicos y de negocio."],"Antes de tocar código, veamos de dónde salen estos datos."],
 notebook:["0:20 · 15 min","Un notebook es como el cuaderno de un científico: lo que piensa, el experimento y el resultado, en la misma página.",["Pulsa «Ejecutar celdas» y comenta cada paso: escribir, ejecutar, ver el resultado debajo.","Después, demo en el Colab real: celda de texto vs código, Shift+Enter, print().","No avances hasta que todos tengan su copia en Drive.","Gemini en Colab: solo para entender errores. Ejercicio 1.1."],"Algo que os va a ahorrar muchos dolores de cabeza…"],
 orden:["0:35 · 10 min","El notebook no lee la pantalla de arriba abajo: recuerda lo que habéis ejecutado y en qué orden.",["Ejecuta la 1 y la 2. Cambia el barco a «Olympic» SIN ejecutar la 1 y ejecuta la 2.","Pregunta antes de pulsar: ¿qué creéis que va a imprimir?","«Reiniciar» y ejecutar la 2 sola: NameError, el error más frecuente de hoy.","Remedio universal: Entorno de ejecución → Reiniciar y ejecutar todo."],"Ya sabemos movernos por el cuaderno. Ahora, el idioma: Python."],
+print:["0:45 · 5 min","print() es la forma de decirle al notebook: enséñame esto. Sin print(), solo vemos la última línea de la celda.",["Pulsa «Ejecutar» con «Sin print»: pregunta dónde está «Braund».","Cambia a «Con print»: cada print() escribe una línea, en orden.","«Varios valores»: separar con comas; print pone espacios.","«f-string»: la f y las llaves. La usarán en el ejercicio 2.1."],"Ya podemos ver los datos. Ahora, ¿qué tipo de dato es cada uno?"],
 tipos:["0:50 · 20 min","Una variable es la etiqueta de un tarro. Y el tipo decide qué podemos hacer: los números se suman; los textos se pasan a mayúsculas.",["Recorre los cinco tarros con el pasajero Braund. Detente en None: la edad que no sabemos.","Pulsa «Ejecutar» en el error y deja que lo lean. Luego «Arreglarlo».","Anticipa: cuando leamos un fichero, todo llegará como texto.","Ejercicios 2.1 (todos) y reto 2.2."],"Un pasajero está bien; ahora queremos muchos."],
-lista:["1:10 · 10 min","Una lista es una fila de taquillas numeradas. La primera es la 0, no la 1.",["Abre la taquilla 0, luego pide a alguien un número y ábrela.","Pregunta: ¿qué taquilla tiene la edad 54? (la 5).","Demo en Colab: len, sum, sorted, append.","Ejercicio 3.1 (edad media) y reto 3.2 (mediana)."],"¿Y si cada dato tuviera nombre en vez de número?"],
+lista:["1:10 · 10 min","Un tarro guarda un valor. Si tenemos 11 edades, ¿creamos 11 tarros? Mejor una sola caja con una etiqueta y compartimentos numerados: eso es una lista.",["Muestra primero los 11 tarros (edad_1, edad_2…) y pregunta: ¿y si fueran 891?","Pulsa «Guardar en una lista»: los valores entran en la caja «edades».","Señala que los compartimentos empiezan en 0. Pulsa uno que te digan.","Pregunta: ¿en qué posición está la edad 54? (la 5). Demo en Colab: len, sum, sorted, append. Ejercicio 3.1 y reto 3.2."],"¿Y si cada dato tuviera nombre en vez de número?"],
 fichas:["1:20 · 10 min","Un diccionario es una ficha: cada dato tiene un nombre. Si apilamos fichas, tenemos una tabla: nuestro primer dataset.",["Señala las claves (nombre, clase, edad…) en una ficha.","Pulsa «Apilar en una tabla»: la lista de diccionarios ES una tabla.","En el notebook, presenta el mini-Titanic y a Mr. Moran (edad None).","Ejercicio 4.1. Después, DESCANSO de 15 minutos."],"Ya tenemos la tabla. Ahora queremos hacerle preguntas."],
-bucle:["2:00 · 40 min","for significa: para cada pasajero, haz esto. if significa: solo si se cumple esta condición.",["Antes del código: la sangría. Los 4 espacios dicen qué va dentro del for y del if.","Pulsa «Recorrer la tabla» y lee en voz alta la línea resaltada.","Cambia la condición (mujeres, 1ª clase) y vuelve a recorrer.","Ejercicios 5.1, 5.2 (saltar None) y reto 5.3. Comprehensions solo para leer."],"Hemos copiado el mismo bucle tres veces. Tiene que haber algo mejor."],
-funcion:["2:40 · 30 min","Una función es una receta: la escribes una vez, le das los ingredientes y te devuelve el resultado.",["Cambia los ingredientes (mujeres, hombres, 1ª, 3ª) y comenta el resultado.","Ya habéis usado funciones sin saberlo: print, len, sum.","Ejercicio 6.1 (edad_media).","Reto 6.2: «acabáis de inventar lo que en Pandas es una línea»."],"Mirad lo que sale al comparar mujeres y hombres…"],
+bucle:["2:30 · 20 min","for significa: para cada pasajero, haz esto. if significa: solo si se cumple esta condición.",["Antes del código: la sangría. Los 4 espacios dicen qué va dentro del for y del if.","Pulsa «Recorrer la tabla» y lee en voz alta la línea resaltada.","Cambia la condición (mujeres, 1ª clase) y vuelve a recorrer.","Ejercicios 6.1, 6.2 (saltar None), retos 6.3 y 6.4 (mujeres de 3ª). Comprehensions solo para leer."],"Hemos copiado el mismo bucle varias veces. Tiene que haber algo mejor."],
+aritmeticos:["2:00 · 10 min","Python es también una calculadora: siete operadores cubren casi todo lo que haremos.",["Recorre los operadores con los ejemplos de la aseguradora: cada clic anima el cálculo.","Detente en / (siempre decimales) frente a // (división entera) y % (resto).","En ** explica el orden: la potencia se hace antes que la multiplicación; con paréntesis lo controlas.","Ejercicio 5.1 (prima al 3 % durante 5 años) y reto 5.2 (repartir 891 expedientes entre 4 analistas)."],"Ahora, en vez de calcular, vamos a preguntar."],
+comparacion:["2:10 · 10 min","Un operador de comparación hace una pregunta de sí o no: ¿la edad es menor que 18? La respuesta siempre es True o False.",["Empieza con < 18: tres menores (Palsson, Sandstrom, Nasser).","Mueve el valor con el deslizador y cambia el operador: los puntos teal son los True.","Prueba == 35: dos pasajeros con la misma edad. Insiste: = guarda, == pregunta.","Moran no aparece: con None no se puede comparar edades. Ejercicio 5.3 (Mrs. Nasser)."],"Una sola condición se queda corta. ¿Y si queremos combinar varias?"],
+logicos:["2:20 · 10 min","Con and, or y not combinamos condiciones: and exige las dos, or se conforma con una, not le da la vuelta.",["Empieza con A = mujeres, and, B = 3ª clase (3 pasajeras): señala las marcas A/B de cada pasajero.","Cambia and por or: ¿por qué ahora salen más?","Activa not: los que antes no cumplían, ahora sí.","Repasa los operadores de comparación del panel: ==, !=, >, <. Ojo: = asigna, == compara. Ejercicio 5.4 (Mr. McCarthy)."],"Ya sabemos hacer preguntas. Ahora, hagámoslas a todos los pasajeros, uno a uno."],
+funcion:["2:50 · 20 min","Una función es una receta: la escribes una vez, le das los ingredientes y te devuelve el resultado.",["Cambia los ingredientes (mujeres, hombres, 1ª, 3ª) y comenta el resultado.","Ya habéis usado funciones sin saberlo: print, len, sum.","Ejercicio 7.1 (edad_media).","Reto 7.2: «acabáis de inventar lo que en Pandas es una línea»."],"Mirad lo que sale al comparar mujeres y hombres…"],
 muestra:["3:10 · 5 min","Con nuestros 12 pasajeros sobrevivieron todas las mujeres y ningún hombre. ¿Publicaríais esta conclusión?",["Deja que contesten 2 o 3 personas antes de tocar nada.","NO pulses todavía «891 pasajeros»: lo revelamos al final.","Después, DESCANSO de 15 minutos."],"Para trabajar con datos de verdad necesitamos más potencia."],
-numpy:["3:30 · 25 min","Python normal mueve los datos de uno en uno, como una carretilla. NumPy mueve la columna entera, como una cinta transportadora.",["Pulsa «Correr» y deja que la diferencia hable sola.","Array: una lista donde todo es del mismo tipo.","Vectorización: aplicar un descuento a todo el catálogo de golpe. Demo: tarifas * 1.10.","Estadísticos en una línea: mean, median, std, percentile. No expliques el porqué de la velocidad."],"Y ahora, la pieza más importante de hoy."],
-colador:["3:55 · 35 min","Una máscara funciona como un colador: preguntamos algo a cada fila y solo pasan las que dicen True.",["Cambia la condición y señala la fila de True/False.","Es el concepto que más usaremos en Pandas.","Truco: la media de ceros y unos es una proporción (vivos.mean() = 58 %).","np.nan contamina las medias: mean vs nanmean. Ejercicios 7.1 y reto 7.2."],"Hasta ahora, 12 pasajeros. Vamos a por todos."],
-noescala:["4:30 · 15 min","Funciona, pero mirad lo que ha costado. Imaginad un millón de filas. Esto no escala.",["Demo en vivo de la §8: cargar el CSV con lo que sabemos.","Todo llega como texto ('22') y las edades vacías son ''. ¿Recordáis el \"22\" + 1?","Vuelve a la escena 9 y pulsa «891 pasajeros»: 74 % y 19 %, no 100 y 0.","Si falla la wifi: sube el CSV local a Colab."],"Por suerte, alguien ya resolvió este problema."],
+numpy:["3:30 · 10 min","Python normal mueve los datos de uno en uno, como una carretilla. NumPy mueve la columna entera, como una cinta transportadora.",["Pulsa «Correr» y deja que la diferencia hable sola.","NumPy es la base de Pandas y de casi todo el análisis de datos en Python.","No expliques el porqué de la velocidad: basta con ver la diferencia."],"Veamos qué significa trabajar con la columna entera."],
+vector:["3:40 · 10 min","Una operación se aplica a toda la columna a la vez. Eso es vectorizar.",["Pulsa «Lista + bucle»: las tarifas cambian una a una.","Restablece y pulsa «Array de NumPy»: cambian las 12 a la vez, con una sola línea.","Todos los elementos de un array son del mismo tipo: mira la etiqueta float64.","Si mezclas número y texto, todo se convierte en texto."],"Con la columna entera también podemos resumir."],
+estadisticos:["3:50 · 10 min","Media, mediana, desviación… cada estadístico es una línea de código.",["Pulsa media y luego mediana: ¿por qué están tan lejos? Unos pocos billetes caros tiran de la media.","Desviación: la franja muestra cuánto se dispersan las tarifas.","Mínimo, máximo y percentil 75 para completar el resumen.","Datos que faltan: np.mean da nan por culpa de Moran; np.nanmean lo ignora (28,6)."],"Y ahora, la pieza más importante de hoy."],
+colador:["4:00 · 30 min","Una máscara funciona como un colador: preguntamos algo a cada fila y solo pasan las que dicen True.",["Cambia la condición y señala la fila de True/False.","Es el concepto que más usaremos en Pandas.","Truco: la media de ceros y unos es una proporción (vivos.mean() = 58 %).","np.nan contamina las medias: mean vs nanmean. Ejercicio 8.1 y reto 8.2."],"Hasta ahora, 12 pasajeros. Vamos a por todos."],
+noescala:["4:30 · 15 min","Funciona, pero mirad lo que ha costado. Imaginad un millón de filas. Esto no escala.",["Demo en vivo de la §9: cargar el CSV con lo que sabemos.","Todo llega como texto ('22') y las edades vacías son ''. ¿Recordáis el \"22\" + 1?","Vuelve a la escena 9 y pulsa «891 pasajeros»: 74 % y 19 %, no 100 y 0.","Si falla la wifi: sube el CSV local a Colab."],"Por suerte, alguien ya resolvió este problema."],
 pandas:["4:45 · 5 min","Dos líneas. Lo que hoy nos ha llevado una sesión, la semana que viene será una línea.",["No expliques Pandas todavía: deja la intriga.","Señala que el resultado ya es una tabla legible que cruza sexo y clase.","Dato para debate: mujeres de 3ª, 50 %; de 1ª, 97 %. La clase también importa."],"Repasemos lo que nos llevamos hoy."],
-repaso:["4:50 · 10 min","Esta es la chuleta de hoy; también está al final del notebook.",["Repasa los símiles en una frase cada uno.","2 minutos para pensar las 4 preguntas; luego despliega las respuestas una a una.","La pregunta 4 es justo lo que resuelve Pandas.","Deberes: VS Code + extensión de Colab (manda el correo hoy) y un tema para el proyecto."],"Nos vemos en la sesión 2."]};
+repaso:["4:50 · 10 min","Esta es la chuleta de hoy; también está al final del notebook.",["Repasa los símiles en una frase cada uno.","3 minutos para pensar las 6 preguntas; luego despliega las respuestas una a una.","La pregunta 4 es justo lo que resuelve Pandas.","Deberes: VS Code + extensión de Colab (manda el correo hoy) y un tema para el proyecto."],"Nos vemos en la sesión 2."]};
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
 function notesShow(){const id=ids[cur],n=N[id];if(!n)return;$('#nTitle').textContent='Notas · '+scenes[cur].getAttribute('aria-label')+' · '+n[0];
   $('#nBody').innerHTML=`<div class="say">«${esc(n[1])}»</div>`+n[2].map(x=>`<div>· ${esc(x)}</div>`).join('')+`<div><span class="tag">Transición:</span> «${esc(n[3])}»</div>`;
