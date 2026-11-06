@@ -116,16 +116,7 @@ h2{font-size:clamp(28px,4.2vw,50px)}
 .brief.play{animation:briefIn .55s cubic-bezier(.3,.7,.3,1) both}
 .brief.play .no{animation:stamp .35s cubic-bezier(.2,1.6,.4,1) .45s both;--r:0deg}
 @keyframes briefIn{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
-/* Notas del orador */
-.notes-btn{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;flex:none}
-.notes-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.notes{max-height:36vh;overflow-y:auto;background:var(--surface);border-top:2px solid var(--accent-fill);padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
-.notes-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.notes-time{display:flex;align-items:center;gap:10px;font-family:var(--f-code);font-variant-numeric:tabular-nums;font-size:18px;font-weight:600}
 .mini{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:12px;font-family:var(--f-body);font-weight:500}
-.notes-body{display:flex;flex-direction:column;gap:6px;max-width:90ch;font-size:16px}
-.notes-body .say{border-left:3px solid var(--accent-fill);padding-left:12px;font-style:italic}
-.notes-body .tag{font-weight:600;color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 /* ---------- Tutorial Colab: componentes propios ---------- */
@@ -272,7 +263,6 @@ table.k tr.cur{background:var(--accent-soft)}
   <div class="meta"><b>Taller de Python · Google Colab</b><span>Business Analytics I · MBDA&amp;IA 2026-27</span></div>
   <div class="progress" aria-hidden="true"><i id="prog"></i></div>
   <span class="count" id="count">1 / 12</span>
-  <button class="notes-btn" id="notesBtn" aria-pressed="false" title="Notas del orador (tecla N)">Notas</button>
 </header>
 
 <main class="stage" id="stage">
@@ -529,11 +519,6 @@ precio * unidades</div><div class="sim-out" id="so2"></div></div>
 
 </main>
 
-<aside class="notes" id="notes" hidden aria-label="Notas del orador">
-  <div class="notes-head"><span class="eyebrow" id="nTitle">Notas</span><span class="notes-time"><span id="nClock">00:00</span><button class="mini" id="nReset">Reiniciar cronómetro</button></span></div>
-  <div class="notes-body" id="nBody"></div>
-  <div class="hint" id="nNext"></div>
-</aside>
 
 <nav class="nav" aria-label="Navegación de escenas">
   <button id="prev" aria-label="Escena anterior">← Anterior</button>
@@ -565,11 +550,10 @@ function go(i,fromHash){
   const changed=i!==cur||!go.started; cur=i; go.started=true;
   if(!fromHash){try{history.replaceState(null,'','#'+ids[i])}catch(e){}}
   if(changed&&enter[ids[i]])enter[ids[i]]()
-  if(!$('#notes').hidden)notesShow();
 }
 $('#prev').onclick=()=>go(cur-1); $('#next').onclick=()=>go(cur+1);
 $$('#dots button').forEach((b,k)=>b.onclick=()=>go(k));
-document.addEventListener('keydown',e=>{if(e.target.matches('input'))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}if(e.key==='n'||e.key==='N')notesToggle($('#notes').hidden)});
+document.addEventListener('keydown',e=>{if(e.target.matches('input'))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}});
 let tx=null;$('#stage').addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 $('#stage').addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>70)go(cur+(d<0?1:-1));tx=null});
 addEventListener('hashchange',()=>{const k=ids.indexOf(location.hash.slice(1));if(k>=0)go(k,true)});
@@ -681,29 +665,6 @@ enter.guardar=async()=>{const id=++kId,rows=$$('#keysTbl tr');for(const r of row
 const checks=$$('#checks input');
 checks.forEach(c=>c.onchange=()=>$('#doneMsg').classList.toggle('show',checks.every(x=>x.checked)));
 
-/* Notas del orador: [tiempo, frase, puntos, transición] */
-const N={
-portada:["≈ 2 min","En los próximos minutos vais a montar vuestro puesto de trabajo: un notebook en Google Colab. Sin instalar nada.",["Pide que abran colab.research.google.com con su cuenta de Google.","Si alguien no tiene cuenta de Google, que la cree ahora o trabaje con un compañero."],"Primero, qué es exactamente Colab."],
-colab:["≈ 3 min","Vuestro portátil solo pone el navegador. El código viaja a un ordenador de Google, que lo ejecuta y os devuelve el resultado.",["Por eso da igual Windows, Mac o Linux.","Notebook: texto, código y resultado en la misma página.","Todo lo que usaremos ya está instalado."],"Vamos a crear el vuestro."],
-crear:["≈ 5 min","Cuatro pasos y tenéis vuestro primer notebook funcionando.",["Hazlo a la vez que ellos en el Colab real.","La primera ejecución tarda unos segundos: Google está encendiendo la máquina.","No avances hasta que todos vean «Hola mundo»."],"Echemos un vistazo a la pantalla."],
-interfaz:["≈ 3 min","No hace falta conocer todos los menús: con estos seis elementos os basta.",["Deja que la animación recorra los elementos y luego pulsa los que pregunten.","Si arriba a la derecha no ves la RAM, no estás conectado: pulsa «Conectar»."],"Ahora, lo básico: las celdas."],
-celdas:["≈ 5 min","Hay dos tipos de celda: texto para explicar y código para calcular.",["Pulsa Shift+Enter sobre la celda de texto: el Markdown se convierte en título.","Prueba las tres combinaciones y fíjate en dónde queda la celda seleccionada.","Shift+Enter es la que más usarán."],"Y ahora, el error que más vais a ver hoy."],
-orden:["≈ 5 min","Colab no lee la pantalla de arriba abajo: recuerda lo que habéis ejecutado y en qué orden.",["Ejecuta la C primero: NameError. Pregunta antes: ¿qué creéis que pasará?","Luego A, B y C: ya funciona. Señala los números entre corchetes.","Remedio universal: Reiniciar sesión y ejecutar todas."],"Ya sabemos movernos. Ahora, los datos."],
-datos:["≈ 5 min","Hay tres formas de meter datos en Colab; en clase usaremos la primera.",["URL: la más sencilla y la del notebook del taller.","Subir: pulsa «Subir» y después «Cerrar la sesión»: el archivo desaparece.","Drive: para el proyecto de la sesión 3, cuando los datos sean vuestros."],"¿Y si nos falta una librería?"],
-pip:["≈ 2 min","Casi nunca hará falta, pero si una librería no está, se instala en una línea.",["El ! significa: orden para el ordenador, no Python.","Pulsa «Reiniciar sesión e importar»: lo instalado también se pierde."],"Os presento a vuestro becario."],
-gemini:["≈ 5 min","Gemini está dentro de Colab. Hoy solo lo usaremos como tutor: para entender, no para que haga el trabajo.",["Pulsa «Explicar error» y comenta que explica sin dar la solución.","Recuerda las tres reglas y la bitácora de IA.","Lee en voz alta los ejemplos de buenas y malas preguntas."],"Para terminar: guardar y entregar."],
-guardar:["≈ 3 min","Colab guarda solo en Drive; para entregar, descargáis el .ipynb.",["Si abren el notebook del taller desde un enlace: «Guardar una copia en Drive» o perderán los cambios.","Ctrl+M y luego H muestra todos los atajos."],"Repasemos los problemas típicos."],
-problemas:["≈ 3 min","Si algo falla, casi seguro es uno de estos cinco.",["Despliega solo los que pregunten.","Insiste: leer la última línea del error."],"Comprobemos que todo está listo."],
-checklist:["≈ 3 min","Marcad cada punto. Cuando estén los cinco, empezamos con Python.",["Pasa por las mesas de quien tenga casillas sin marcar.","Sienta juntos perfiles técnicos y de negocio para ayudarse."],"Empezamos con Python."]};
-function notesShow(){const id=ids[cur],n=N[id];if(!n)return;$('#nTitle').textContent='Notas · '+scenes[cur].getAttribute('aria-label')+' · '+n[0];
-  $('#nBody').innerHTML=`<div class="say">«${esc(n[1])}»</div>`+n[2].map(x=>`<div>· ${esc(x)}</div>`).join('')+`<div><span class="tag">Transición:</span> «${esc(n[3])}»</div>`;
-  $('#nNext').textContent=cur<scenes.length-1?'Siguiente: '+scenes[cur+1].getAttribute('aria-label'):'Última escena'}
-function notesToggle(on){$('#notes').hidden=!on;$('#notesBtn').setAttribute('aria-pressed',on);try{localStorage.setItem('notas',on?'1':'0')}catch(e){}if(on)notesShow()}
-$('#notesBtn').onclick=()=>notesToggle($('#notes').hidden);
-let t0=Date.now();$('#nReset').onclick=()=>{t0=Date.now();tick()};
-function tick(){const s=Math.floor((Date.now()-t0)/1000);$('#nClock').textContent=Math.floor(s/3600)+':'+String(Math.floor(s/60)%60).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-setInterval(tick,1000);tick();
-try{if(localStorage.getItem('notas')==='1')notesToggle(true)}catch(e){}
 
 /* Inicio */
 const start=ids.indexOf(location.hash.slice(1));go(start>=0?start:0,true);

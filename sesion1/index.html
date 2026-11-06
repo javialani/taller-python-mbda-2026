@@ -403,16 +403,7 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
 .brief.play .no{animation:stamp .35s cubic-bezier(.2,1.6,.4,1) .45s both;--r:0deg}
 @keyframes briefIn{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
 
-/* Notas del orador */
-.notes-btn{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;flex:none}
-.notes-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.notes{max-height:36vh;overflow-y:auto;background:var(--surface);border-top:2px solid var(--accent-fill);padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
-.notes-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.notes-time{display:flex;align-items:center;gap:10px;font-family:var(--f-code);font-variant-numeric:tabular-nums;font-size:18px;font-weight:600}
 .mini{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:12px;font-family:var(--f-body);font-weight:500}
-.notes-body{display:flex;flex-direction:column;gap:6px;max-width:90ch;font-size:16px}
-.notes-body .say{border-left:3px solid var(--accent-fill);padding-left:12px;font-style:italic}
-.notes-body .tag{font-weight:600;color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
@@ -422,7 +413,6 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
   <div class="meta"><b>Taller de Python · Sesión 1</b><span>Business Analytics I · MBDA&amp;IA 2026-27</span></div>
   <div class="progress" aria-hidden="true"><i id="prog"></i></div>
   <span class="count" id="count">1 / 14</span>
-  <button class="notes-btn" id="notesBtn" aria-pressed="false" title="Notas del orador (tecla N)">Notas</button>
 </header>
 
 <main class="stage" id="stage">
@@ -869,11 +859,6 @@ table.t td.na{color:var(--warn);font-family:var(--f-code)}
 
 </main>
 
-<aside class="notes" id="notes" hidden aria-label="Notas del orador">
-  <div class="notes-head"><span class="eyebrow" id="nTitle">Notas</span><span class="notes-time"><span id="nClock">00:00</span><button class="mini" id="nReset">Reiniciar cronómetro</button></span></div>
-  <div class="notes-body" id="nBody"></div>
-  <div class="hint" id="nNext"></div>
-</aside>
 
 <nav class="nav" aria-label="Navegación de escenas">
   <button id="prev" aria-label="Escena anterior">← Anterior</button>
@@ -1266,45 +1251,10 @@ let bn=0;
 scenes.forEach(s=>{const id=s.dataset.id;if(!B[id])return;bn++;const d=document.createElement('div');d.className='brief';d.innerHTML=`<span class="no">ENCARGO<br>Nº ${String(bn).padStart(2,'0')}</span><span class="from">Compañía Atlántica de Seguros · Dirección de Riesgos</span><span class="txt">${B[id]}</span>`;const head=s.querySelector('.inner').firstElementChild;head.after(d)});
 function briefPlay(){const b=scenes[cur].querySelector('.brief');if(b)replay(b)}
 
-/* Notas del orador: [tiempo, frase para decir, puntos clave, transición] */
-const N={
-viaje:["0:05 · 3 min","El 10 de abril de 1912 el Titanic zarpó de Southampton hacia Nueva York. Nunca llegó.",["Deja que la animación corra sin hablar encima; luego recorre la bitácora.","Cifras redondeadas: unas 2.200 personas a bordo y más de 1.500 fallecidos.","Nuestro dataset tiene 891 de esos pasajeros: los datos son reales.","Tono sobrio: son personas, no solo filas."],"Ahora, vuestro papel en esta historia."],
-encargo:["0:08 · 4 min","Durante el taller sois analistas de riesgos de una aseguradora. Os llega este encargo.",["La compañía es ficticia; los pasajeros y sus datos son reales.","Lee la carta en voz alta y señala las cuatro preguntas.","Cada bloque empezará con un encargo nuevo de la Dirección: lo veréis arriba de cada pantalla.","La última pregunta (¿podemos fiarnos de 12?) la responderemos al final."],"Para trabajar, lo primero es la herramienta."],
-portada:["0:00 · 5 min","Hoy vamos a pasar de no haber abierto nunca un notebook a analizar los 891 pasajeros del Titanic. No vais a salir programadores; vais a salir sabiendo qué se puede hacer con Python y cuándo pedirlo.",["Preséntate y cuenta el taller: 3 sesiones de Python y 1 de R, con el Titanic como hilo.","Pide que abran ya el enlace del notebook y hagan «Guardar una copia en Drive».","Anuncia el proyecto individual de la sesión 3: un dataset de negocio y 3 preguntas.","Mano alzada: ¿quién ha programado alguna vez? Sienta juntos perfiles técnicos y de negocio."],"Antes de tocar código, veamos de dónde salen estos datos."],
-notebook:["0:20 · 15 min","Un notebook es como el cuaderno de un científico: lo que piensa, el experimento y el resultado, en la misma página.",["Pulsa «Ejecutar celdas» y comenta cada paso: escribir, ejecutar, ver el resultado debajo.","Después, demo en el Colab real: celda de texto vs código, Shift+Enter, print().","No avances hasta que todos tengan su copia en Drive.","Gemini en Colab: solo para entender errores. Ejercicio 1.1."],"Algo que os va a ahorrar muchos dolores de cabeza…"],
-orden:["0:35 · 10 min","El notebook no lee la pantalla de arriba abajo: recuerda lo que habéis ejecutado y en qué orden.",["Ejecuta la 1 y la 2. Cambia el barco a «Olympic» SIN ejecutar la 1 y ejecuta la 2.","Pregunta antes de pulsar: ¿qué creéis que va a imprimir?","«Reiniciar» y ejecutar la 2 sola: NameError, el error más frecuente de hoy.","Remedio universal: Entorno de ejecución → Reiniciar y ejecutar todo."],"Ya sabemos movernos por el cuaderno. Ahora, el idioma: Python."],
-print:["0:40 · 5 min","print() es la forma de decirle al notebook: enséñame esto. Sin print(), solo vemos la última línea de la celda.",["Pulsa «Ejecutar» con «Sin print»: pregunta dónde está «Braund».","Cambia a «Con print»: cada print() escribe una línea, en orden.","«Varios valores»: separar con comas; print pone espacios.","«f-string»: la f y las llaves. La usarán en el ejercicio 2.1."],"Ya podemos ver los datos. Ahora, ¿dónde los guardamos?"],
-variable:["0:45 · 10 min","Una variable es un tarro con una etiqueta: el nombre. Con = metemos un valor dentro; al escribir el nombre, lo sacamos para usarlo.",["1 · Guardar: = significa guarda, no es igual. Lo retomaremos al ver ==.","2 · Usar: edad + 1 no vacía el tarro; edad sigue valiendo 22.","3 · Cambiar: un tarro guarda un solo valor; el anterior se pierde.","4 · Nombres: sin espacios, sin empezar por número; Edad y edad son tarros distintos."],"Cada tarro guarda un tipo de dato. Veamos cuáles."],
-tipos:["0:55 · 15 min","Ya sabemos qué es una variable. El tipo decide qué podemos hacer: los números se suman; los textos se pasan a mayúsculas.",["Recorre los cinco tarros con el pasajero Braund. Detente en None: la edad que no sabemos.","Pulsa «Ejecutar» en el error y deja que lo lean. Luego «Arreglarlo».","Anticipa: cuando leamos un fichero, todo llegará como texto.","Ejercicios 2.1 (todos) y reto 2.2."],"Un pasajero está bien; ahora queremos muchos."],
-lista:["1:10 · 10 min","Un tarro guarda un valor. Si tenemos 11 edades, ¿creamos 11 tarros? Mejor una sola caja con una etiqueta y compartimentos numerados: eso es una lista.",["Muestra primero los 11 tarros (edad_1, edad_2…) y pregunta: ¿y si fueran 891?","Pulsa «Guardar en una lista»: los valores entran en la caja «edades».","Señala que los compartimentos empiezan en 0. Pulsa uno que te digan.","Pregunta: ¿en qué posición está la edad 54? (la 5). Demo en Colab: len, sum, sorted, append. Ejercicio 3.1 y reto 3.2."],"¿Y si cada dato tuviera nombre en vez de número?"],
-fichas:["1:20 · 10 min","Un diccionario es una ficha: cada dato tiene un nombre. Si apilamos fichas, tenemos una tabla: nuestro primer dataset.",["Señala las claves (nombre, clase, edad…) en una ficha.","Pulsa «Apilar en una tabla»: la lista de diccionarios ES una tabla.","En el notebook, presenta el mini-Titanic y a Mr. Moran (edad None).","Ejercicio 4.1. Después, DESCANSO de 15 minutos."],"Ya tenemos la tabla. Ahora queremos hacerle preguntas."],
-bucle:["2:30 · 20 min","for significa: para cada pasajero, haz esto. if significa: solo si se cumple esta condición.",["Antes del código: la sangría. Los 4 espacios dicen qué va dentro del for y del if.","Pulsa «Recorrer la tabla» y lee en voz alta la línea resaltada.","Cambia la condición (mujeres, 1ª clase) y vuelve a recorrer.","Ejercicios 6.1, 6.2 (saltar None), retos 6.3 y 6.4 (mujeres de 3ª). Comprehensions solo para leer."],"Hemos copiado el mismo bucle varias veces. Tiene que haber algo mejor."],
-aritmeticos:["2:00 · 10 min","Python es también una calculadora: siete operadores cubren casi todo lo que haremos.",["Recorre los operadores con los ejemplos de la aseguradora: cada clic anima el cálculo.","Detente en / (siempre decimales) frente a // (división entera) y % (resto).","En ** explica el orden: la potencia se hace antes que la multiplicación; con paréntesis lo controlas.","Ejercicio 5.1 (prima al 3 % durante 5 años) y reto 5.2 (repartir 891 expedientes entre 4 analistas)."],"Ahora, en vez de calcular, vamos a preguntar."],
-comparacion:["2:10 · 10 min","Un operador de comparación hace una pregunta de sí o no: ¿la edad es menor que 18? La respuesta siempre es True o False.",["Empieza con < 18: tres menores (Palsson, Sandstrom, Nasser).","Mueve el valor con el deslizador y cambia el operador: los puntos teal son los True.","Prueba == 35: dos pasajeros con la misma edad. Insiste: = guarda, == pregunta.","Moran no aparece: con None no se puede comparar edades. Ejercicio 5.3 (Mrs. Nasser)."],"Una sola condición se queda corta. ¿Y si queremos combinar varias?"],
-logicos:["2:20 · 10 min","Con and, or y not combinamos condiciones: and exige las dos, or se conforma con una, not le da la vuelta.",["Empieza con A = mujeres, and, B = 3ª clase (3 pasajeras): señala las marcas A/B de cada pasajero.","Cambia and por or: ¿por qué ahora salen más?","Activa not: los que antes no cumplían, ahora sí.","Repasa los operadores de comparación del panel: ==, !=, >, <. Ojo: = asigna, == compara. Ejercicio 5.4 (Mr. McCarthy)."],"Ya sabemos hacer preguntas. Ahora, hagámoslas a todos los pasajeros, uno a uno."],
-funcion:["2:50 · 20 min","Una función es una receta: la escribes una vez, le das los ingredientes y te devuelve el resultado.",["Cambia los ingredientes (mujeres, hombres, 1ª, 3ª) y comenta el resultado.","Ya habéis usado funciones sin saberlo: print, len, sum.","Ejercicio 7.1 (edad_media).","Reto 7.2: «acabáis de inventar lo que en Pandas es una línea»."],"Mirad lo que sale al comparar mujeres y hombres…"],
-muestra:["3:10 · 5 min","Con nuestros 12 pasajeros sobrevivieron todas las mujeres y ningún hombre. ¿Publicaríais esta conclusión?",["Deja que contesten 2 o 3 personas antes de tocar nada.","NO pulses todavía «891 pasajeros»: lo revelamos al final.","Después, DESCANSO de 15 minutos."],"Para trabajar con datos de verdad necesitamos más potencia."],
-numpy:["3:30 · 10 min","Python normal mueve los datos de uno en uno, como una carretilla. NumPy mueve la columna entera, como una cinta transportadora.",["Pulsa «Correr» y deja que la diferencia hable sola.","NumPy es la base de Pandas y de casi todo el análisis de datos en Python.","No expliques el porqué de la velocidad: basta con ver la diferencia."],"Veamos qué significa trabajar con la columna entera."],
-vector:["3:40 · 10 min","Una operación se aplica a toda la columna a la vez. Eso es vectorizar.",["Pulsa «Lista + bucle»: las tarifas cambian una a una.","Restablece y pulsa «Array de NumPy»: cambian las 12 a la vez, con una sola línea.","Todos los elementos de un array son del mismo tipo: mira la etiqueta float64.","Si mezclas número y texto, todo se convierte en texto."],"Con la columna entera también podemos resumir."],
-estadisticos:["3:50 · 10 min","Media, mediana, desviación… cada estadístico es una línea de código.",["Pulsa media y luego mediana: ¿por qué están tan lejos? Unos pocos billetes caros tiran de la media.","Desviación: la franja muestra cuánto se dispersan las tarifas.","Mínimo, máximo y percentil 75 para completar el resumen.","Datos que faltan: np.mean da nan por culpa de Moran; np.nanmean lo ignora (28,6)."],"Y ahora, la pieza más importante de hoy."],
-colador:["4:00 · 30 min","Una máscara funciona como un colador: preguntamos algo a cada fila y solo pasan las que dicen True.",["Cambia la condición y señala la fila de True/False.","Es el concepto que más usaremos en Pandas.","Truco: la media de ceros y unos es una proporción (vivos.mean() = 58 %).","np.nan contamina las medias: mean vs nanmean. Ejercicio 8.1 y reto 8.2."],"Hasta ahora, 12 pasajeros. Vamos a por todos."],
-noescala:["4:30 · 15 min","Funciona, pero mirad lo que ha costado. Imaginad un millón de filas. Esto no escala.",["Demo en vivo de la §9: cargar el CSV con lo que sabemos.","Todo llega como texto ('22') y las edades vacías son ''. ¿Recordáis el \"22\" + 1?","Vuelve a la escena 9 y pulsa «891 pasajeros»: 74 % y 19 %, no 100 y 0.","Si falla la wifi: sube el CSV local a Colab."],"Por suerte, alguien ya resolvió este problema."],
-pandas:["4:45 · 5 min","Dos líneas. Lo que hoy nos ha llevado una sesión, la semana que viene será una línea.",["No expliques Pandas todavía: deja la intriga.","Señala que el resultado ya es una tabla legible que cruza sexo y clase.","Dato para debate: mujeres de 3ª, 50 %; de 1ª, 97 %. La clase también importa."],"Repasemos lo que nos llevamos hoy."],
-repaso:["4:50 · 10 min","Esta es la chuleta de hoy; también está al final del notebook.",["Repasa los símiles en una frase cada uno.","3 minutos para pensar las 6 preguntas; luego despliega las respuestas una a una.","La pregunta 4 es justo lo que resuelve Pandas.","Deberes: VS Code + extensión de Colab (manda el correo hoy) y un tema para el proyecto."],"Nos vemos en la sesión 2."]};
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
-function notesShow(){const id=ids[cur],n=N[id];if(!n)return;$('#nTitle').textContent='Notas · '+scenes[cur].getAttribute('aria-label')+' · '+n[0];
-  $('#nBody').innerHTML=`<div class="say">«${esc(n[1])}»</div>`+n[2].map(x=>`<div>· ${esc(x)}</div>`).join('')+`<div><span class="tag">Transición:</span> «${esc(n[3])}»</div>`;
-  $('#nNext').textContent=cur<scenes.length-1?'Siguiente: '+scenes[cur+1].getAttribute('aria-label'):'Última escena'}
-function notesToggle(on){$('#notes').hidden=!on;$('#notesBtn').setAttribute('aria-pressed',on);try{localStorage.setItem('notas',on?'1':'0')}catch(e){}if(on)notesShow()}
-$('#notesBtn').onclick=()=>notesToggle($('#notes').hidden);
-document.addEventListener('keydown',e=>{if(e.target.matches('input'))return;if(e.key==='n'||e.key==='N')notesToggle($('#notes').hidden)});
-let t0=Date.now();$('#nReset').onclick=()=>{t0=Date.now();tick()};
-function tick(){const s=Math.floor((Date.now()-t0)/1000);$('#nClock').textContent=String(Math.floor(s/3600)).padStart(1,'0')+':'+String(Math.floor(s/60)%60).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-setInterval(tick,1000);tick();
-const _go=go;go=function(i,h){const before=cur;_go(i,h);if(cur!==before||!go.booted){briefPlay()}go.booted=true;if(!$('#notes').hidden)notesShow()};
+const _go=go;go=function(i,h){const before=cur;_go(i,h);if(cur!==before||!go.booted){briefPlay()}go.booted=true};
 $('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
 $$('#dots button').forEach((b,k)=>b.onclick=()=>go(k));
-try{if(localStorage.getItem('notas')==='1')notesToggle(true)}catch(e){}
 
 /* Inicio */
 const start=ids.indexOf(location.hash.slice(1));go(start>=0?start:0,true);
