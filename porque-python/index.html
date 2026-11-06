@@ -116,16 +116,7 @@ h2{font-size:clamp(28px,4.2vw,50px)}
 .brief.play{animation:briefIn .55s cubic-bezier(.3,.7,.3,1) both}
 .brief.play .no{animation:stamp .35s cubic-bezier(.2,1.6,.4,1) .45s both;--r:0deg}
 @keyframes briefIn{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
-/* Notas del orador */
-.notes-btn{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;flex:none}
-.notes-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.notes{max-height:36vh;overflow-y:auto;background:var(--surface);border-top:2px solid var(--accent-fill);padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
-.notes-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.notes-time{display:flex;align-items:center;gap:10px;font-family:var(--f-code);font-variant-numeric:tabular-nums;font-size:18px;font-weight:600}
 .mini{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px;font-size:12px;font-family:var(--f-body);font-weight:500}
-.notes-body{display:flex;flex-direction:column;gap:6px;max-width:90ch;font-size:16px}
-.notes-body .say{border-left:3px solid var(--accent-fill);padding-left:12px;font-style:italic}
-.notes-body .tag{font-weight:600;color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 /* ---------- Tutorial Colab: componentes propios ---------- */
@@ -340,7 +331,6 @@ table.rk tr td{transition:opacity .4s}
   <div class="meta"><b>Taller de Python · ¿Por qué Python?</b><span>Business Analytics I · MBDA&amp;IA 2026-27</span></div>
   <div class="progress" aria-hidden="true"><i id="prog"></i></div>
   <span class="count" id="count">1 / 13</span>
-  <button class="notes-btn" id="notesBtn" aria-pressed="false" title="Notas del orador (tecla N)">Notas</button>
 </header>
 
 <main class="stage" id="stage">
@@ -566,11 +556,6 @@ table.rk tr td{transition:opacity .4s}
 
 </main>
 
-<aside class="notes" id="notes" hidden aria-label="Notas del orador">
-  <div class="notes-head"><span class="eyebrow" id="nTitle">Notas</span><span class="notes-time"><span id="nClock">00:00</span><button class="mini" id="nReset">Reiniciar cronómetro</button></span></div>
-  <div class="notes-body" id="nBody"></div>
-  <div class="hint" id="nNext"></div>
-</aside>
 
 <nav class="nav" aria-label="Navegación de escenas">
   <button id="prev" aria-label="Escena anterior">← Anterior</button>
@@ -602,11 +587,10 @@ function go(i,fromHash){
   const changed=i!==cur||!go.started; cur=i; go.started=true;
   if(!fromHash){try{history.replaceState(null,'','#'+ids[i])}catch(e){}}
   if(changed){counts(scenes[i]);if(enter[ids[i]])enter[ids[i]]()}
-  if(!$('#notes').hidden)notesShow();
 }
 $('#prev').onclick=()=>go(cur-1); $('#next').onclick=()=>go(cur+1);
 $$('#dots button').forEach((b,k)=>b.onclick=()=>go(k));
-document.addEventListener('keydown',e=>{if(e.target.matches('input'))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}if(e.key==='n'||e.key==='N')notesToggle($('#notes').hidden)});
+document.addEventListener('keydown',e=>{if(e.target.matches('input'))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}});
 let tx=null;$('#stage').addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 $('#stage').addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>70)go(cur+(d<0?1:-1));tx=null});
 addEventListener('hashchange',()=>{const k=ids.indexOf(location.hash.slice(1));if(k>=0)go(k,true)});
@@ -674,30 +658,6 @@ $$('#rkOpts button').forEach(b=>b.onclick=async()=>{const v=+b.dataset.v;$$('#rk
   const rows=$$('#rkTbl tr.hide');for(const r of rows){await wait(350);r.classList.remove('hide')}});
 enter.rankings=()=>{$$('#rkTbl tr').forEach((r,i)=>{if(i)r.classList.add('hide')});$$('#rkOpts button').forEach(x=>x.className='');$('#rkFb').textContent=''};
 
-/* Notas del orador: [tiempo, frase, puntos, transición] */
-const N={
-portada:["≈ 1 min","No vamos a decir que Python sea el mejor lenguaje, sino que es de los más usados, y por qué tiene sentido en este máster.",["Pregunta rápida: ¿quién ha oído hablar de Python? ¿Alguien lo ha usado?","Sirve para calibrar el nivel del grupo."],"Empecemos por el principio."],
-origen:["≈ 2 min","Python empezó como un proyecto para entretenerse en vacaciones.",["Navidad de 1989 en el CWI de Ámsterdam; primera versión pública en 1991.","El nombre viene de Monty Python: la documentación está llena de guiños a sus sketches.","Desde 2018 lo gobierna un consejo elegido: nadie puede cerrarlo ni cobrar por él."],"¿Y qué filosofía tiene?"],
-zen:["≈ 2 min","Python está pensado para que el código lo lean personas.",["Pulsa «Ejecutar import this» o hazlo en el Colab real: suele generar curiosidad.","Traduce dos o tres principios: bonito mejor que feo, simple mejor que complejo, la legibilidad cuenta.","Enlace con el taller: os pediremos poder explicar cada línea que entreguéis."],"Un momento clave de su historia: el cambio de versión."],
-versiones:["≈ 2 min","Python 3 rompió la compatibilidad a propósito para corregir errores de diseño.",["En 2008 aparece la comparativa: print pasa a ser función y 3/2 da 1.5.","La migración tardó 12 años: cambiar una tecnología muy adoptada es caro y lento.","Aviso práctico: código de internet con print sin paréntesis es Python 2."],"¿Por qué le gusta tanto a la gente?"],
-ventajas:["≈ 2 min","No leas las ocho: elige tres.",["Se lee fácil, ecosistema enorme e interactivo son las más relevantes para este grupo.","«Pegamento»: conecta piezas que ya existen en la empresa.","Cierra con la caja roja: saber cuándo no usar Python también es criterio."],"Veámoslo con un ejemplo."],
-comparativa:["≈ 2 min","El mismo filtro en Java y en Python.",["Empieza en Java y pulsa «Python» cuando quieras hacer el contraste.","Pide a la sala que lea en voz alta el de Python, sin saber programar.","Java no es peor: está pensado para grandes aplicaciones empresariales.","Primer contacto con el Titanic: este filtro lo haremos con pasajeros reales."],"Vale, se lee fácil. ¿Pero se usa?"],
-stackoverflow:["≈ 2 min","Los cuatro primeros están prácticamente empatados, y Python está entre ellos.",["Stack Overflow es la web de preguntas y respuestas de los programadores; su encuesta es la más citada.","SQL es 2.º: en este máster Python y SQL van de la mano.","Matiz: encuesta voluntaria, sesga hacia esa comunidad."],"Otras fuentes miden cosas distintas."],
-tiobe:["≈ 2 min","TIOBE cuenta búsquedas; GitHub cuenta código real.",["TIOBE: Python 1.º, aunque baja 5 puntos en el año y en octubre cambió el método (búsquedas en chino).","GitHub: 2.º tras TypeScript, muy usado en desarrollo web.","Guiño: R, el lenguaje de la sesión 4, está en el 8.º puesto."],"¿Y qué piden las empresas?"],
-empleo:["≈ 2 min","Python está entre las tecnologías más pedidas, aquí y en EE. UU.",["España: Java lidera por banca, seguros y administración; Python lleva todo 2026 en 2.ª posición.","EE. UU.: Python y SQL casi empatados; juntos en 1 de cada 5 ofertas.","Uso y demanda no son lo mismo: JavaScript es 1.º en uso pero 4.º en ofertas."],"Vamos a lo que más os interesa: los datos."],
-datos:["≈ 2 min","El uso más frecuente de Python es el análisis de datos.",["Encuesta de la Python Software Foundation y JetBrains, más de 30.000 respuestas.","Sumando machine learning e ingeniería de datos, los datos dominan.","Es respuesta múltiple: los porcentajes suman más de 100."],"Y en inteligencia artificial, todavía más."],
-ia:["≈ 2 min","Python es el lenguaje de referencia para construir IA.",["PyTorch, TensorFlow y scikit-learn se usan principalmente desde Python.","En el taller usaremos la IA como copiloto, y funciona muy bien con Python.","Pendiente: el dato de GitHub es de Octoverse 2025; confirmar si 2026 lo actualiza."],"Hagamos una pausa para pensar en los datos."],
-rankings:["≈ 2 min","El mismo lenguaje sale 1.º, 2.º o 4.º según quién mida y qué mida.",["Haz la pregunta antes de pulsar: suelen decir 3 o 4.","Ninguna fuente miente: cada una responde a una pregunta distinta.","Pregunta: si tuvierais que convencer a vuestro director, ¿qué dato usaríais?"],"Para terminar, la idea clave."],
-cierre:["≈ 1 min","No hace falta que acabéis programando: sí que sepáis cuándo Python os puede ayudar.",["Hoja de ruta: sesión 1 en Colab, sesión 2 Pandas con el Titanic, sesión 3 proyecto con IA, sesión 4 en R.","Transición directa al tutorial de Colab."],"Abrimos Colab."]};
-function notesShow(){const id=ids[cur],n=N[id];if(!n)return;$('#nTitle').textContent='Notas · '+scenes[cur].getAttribute('aria-label')+' · '+n[0];
-  $('#nBody').innerHTML=`<div class="say">«${esc(n[1])}»</div>`+n[2].map(x=>`<div>· ${esc(x)}</div>`).join('')+`<div><span class="tag">Transición:</span> «${esc(n[3])}»</div>`;
-  $('#nNext').textContent=cur<scenes.length-1?'Siguiente: '+scenes[cur+1].getAttribute('aria-label'):'Última escena'}
-function notesToggle(on){$('#notes').hidden=!on;$('#notesBtn').setAttribute('aria-pressed',on);try{localStorage.setItem('notas',on?'1':'0')}catch(e){}if(on)notesShow()}
-$('#notesBtn').onclick=()=>notesToggle($('#notes').hidden);
-let t0=Date.now();$('#nReset').onclick=()=>{t0=Date.now();tick()};
-function tick(){const s=Math.floor((Date.now()-t0)/1000);$('#nClock').textContent=Math.floor(s/3600)+':'+String(Math.floor(s/60)%60).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-setInterval(tick,1000);tick();
-try{if(localStorage.getItem('notas')==='1')notesToggle(true)}catch(e){}
 
 /* Inicio */
 const start=ids.indexOf(location.hash.slice(1));go(start>=0?start:0,true);
