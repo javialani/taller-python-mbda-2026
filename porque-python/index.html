@@ -558,7 +558,7 @@ table.rk tr td{transition:opacity .4s}
 <section class="scene cover" data-id="cierre" aria-label="La idea clave">
   <div class="inner">
     <div class="eyebrow">La idea clave</div>
-    <p class="close-line">No hace falta que acabéis programando. Sí que sepáis cuándo Python os sirve.</p>
+    <p class="close-line">No hace falta que acabéis programando. Sí que sepáis cuándo Python os puede ayudar.</p>
     <div class="waves" aria-hidden="true"><i style="animation-delay:0s"></i><i style="animation-delay:.2s"></i><i style="animation-delay:.4s"></i><i style="animation-delay:.6s"></i><i style="animation-delay:.8s"></i><i style="animation-delay:1s"></i><i style="animation-delay:1.2s"></i></div>
     <div class="row"><a class="btn" href="../colab/" style="text-decoration:none">Empezar: Google Colab, paso a paso →</a></div>
   </div>
@@ -688,7 +688,7 @@ empleo:["≈ 2 min","Python está entre las tecnologías más pedidas, aquí y e
 datos:["≈ 2 min","El uso más frecuente de Python es el análisis de datos.",["Encuesta de la Python Software Foundation y JetBrains, más de 30.000 respuestas.","Sumando machine learning e ingeniería de datos, los datos dominan.","Es respuesta múltiple: los porcentajes suman más de 100."],"Y en inteligencia artificial, todavía más."],
 ia:["≈ 2 min","Python es el lenguaje de referencia para construir IA.",["PyTorch, TensorFlow y scikit-learn se usan principalmente desde Python.","En el taller usaremos la IA como copiloto, y funciona muy bien con Python.","Pendiente: el dato de GitHub es de Octoverse 2025; confirmar si 2026 lo actualiza."],"Hagamos una pausa para pensar en los datos."],
 rankings:["≈ 2 min","El mismo lenguaje sale 1.º, 2.º o 4.º según quién mida y qué mida.",["Haz la pregunta antes de pulsar: suelen decir 3 o 4.","Ninguna fuente miente: cada una responde a una pregunta distinta.","Pregunta: si tuvierais que convencer a vuestro director, ¿qué dato usaríais?"],"Para terminar, la idea clave."],
-cierre:["≈ 1 min","No hace falta que acabéis programando: sí que sepáis cuándo Python os sirve.",["Hoja de ruta: sesión 1 en Colab, sesión 2 Pandas con el Titanic, sesión 3 proyecto con IA, sesión 4 en R.","Transición directa al tutorial de Colab."],"Abrimos Colab."]};
+cierre:["≈ 1 min","No hace falta que acabéis programando: sí que sepáis cuándo Python os puede ayudar.",["Hoja de ruta: sesión 1 en Colab, sesión 2 Pandas con el Titanic, sesión 3 proyecto con IA, sesión 4 en R.","Transición directa al tutorial de Colab."],"Abrimos Colab."]};
 function notesShow(){const id=ids[cur],n=N[id];if(!n)return;$('#nTitle').textContent='Notas · '+scenes[cur].getAttribute('aria-label')+' · '+n[0];
   $('#nBody').innerHTML=`<div class="say">«${esc(n[1])}»</div>`+n[2].map(x=>`<div>· ${esc(x)}</div>`).join('')+`<div><span class="tag">Transición:</span> «${esc(n[3])}»</div>`;
   $('#nNext').textContent=cur<scenes.length-1?'Siguiente: '+scenes[cur+1].getAttribute('aria-label'):'Última escena'}
