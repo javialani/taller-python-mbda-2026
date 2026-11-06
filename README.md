@@ -6,4 +6,4 @@ Material de apoyo del taller de Python de la asignatura *Business Analytics I: F
 - `colab/`: tutorial interactivo de Google Colab
 - `sesion1/`: presentación interactiva de la sesión 1
 
-Publicado con GitHub Pages (rama `main`, carpeta raíz).
+Publicado con GitHub Pages (rama `main`, carpeta raíz): https://javialani.github.io/taller-python-mbda-2026/
