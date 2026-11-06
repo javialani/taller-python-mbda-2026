@@ -653,7 +653,8 @@ function tl(k){$$('#tl button').forEach(b=>b.setAttribute('aria-pressed',+b.data
   $('#tlDetail').style.animation='none';void $('#tlDetail').offsetWidth;$('#tlDetail').style.animation='fadeUp .4s ease both'}
 $$('#tl button').forEach(b=>b.onclick=()=>tl(+b.dataset.k));
 let tlId=0;
-enter.versiones=async()=>{const id=++tlId;for(const k of [0,1,2]){if(id!==tlId)return;tl(k);await wait(1500)}};
+enter.versiones=async()=>{const id=++tlId;for(const k of [0,1,2,3,4]){if(id!==tlId)return;tl(k);await wait(k===2?4000:2200)}};
+$$('#tl button').forEach(b=>b.addEventListener('click',()=>tlId++));
 tl(2);
 
 /* Comparativa */
