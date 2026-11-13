@@ -64,8 +64,8 @@ h2{font:600 clamp(28px,3.6vw,40px)/1.1 var(--f-d)}
 .sec-head p{color:var(--muted);max-width:46ch}
 
 /* Ruta */
-.route{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
-.route::before{content:"";position:absolute;left:0;right:0;top:27px;height:2px;background:linear-gradient(90deg,var(--fill) 0 36%,var(--line) 36%)}
+.route{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;--done:0px}
+.route::before{content:"";position:absolute;left:0;right:0;top:27px;height:2px;background:linear-gradient(90deg,var(--fill) 0 var(--done),var(--line) var(--done))}
 .stop{position:relative;display:flex;flex-direction:column;gap:10px;text-decoration:none;opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
 .stop.show{opacity:1;transform:none}
 .dot{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font:600 18px var(--f-d);background:var(--bg);border:2px solid var(--line);color:var(--muted);position:relative;z-index:1;transition:transform .25s}
@@ -203,6 +203,11 @@ loop();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}}),{threshold:.2});
 document.querySelectorAll('.stop').forEach((s,i)=>{s.style.transitionDelay=(i*90)+'ms';io.observe(s)});
 })();
+
+/* La línea de la ruta llega hasta la última etapa disponible */
+(function(){const r=document.querySelector('.route');if(!r)return;
+  const fit=()=>{const on=r.querySelectorAll('.stop.on .dot');if(!on.length)return;const d=on[on.length-1].getBoundingClientRect(),b=r.getBoundingClientRect();r.style.setProperty('--done',(d.left+d.width/2-b.left)+'px')};
+  fit();addEventListener('resize',fit);addEventListener('load',fit)})();
 </script>
 </body>
 </html>
